@@ -9,7 +9,7 @@ namespace MusicDrone.Data
         public MusicDroneDbContext(DbContextOptions<MusicDroneDbContext> options)
             : base(options)
         {
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
