@@ -53,7 +53,7 @@ namespace MusicDrone.Data.Services
 
             await _userManager.AddToRoleAsync(user, role);
 
-            return BaseResponse<string>.Ok(role);
+            return BaseResponse<string>.Ok(user.UserName);
         }
 
         public async Task<BaseResponse<ProfileDto>> RetrieveProfile(ClaimsPrincipal userClaims)

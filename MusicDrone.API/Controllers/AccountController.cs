@@ -12,7 +12,7 @@ namespace MusicDrone.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
         private readonly IAccountManagement _accountManagementService;
         private readonly IMapper _mapper;
@@ -89,7 +89,7 @@ namespace MusicDrone.API.Controllers
 
             var response = new RegisterResponse
             {
-                Token = registerResult.Data
+                Username = registerResult.Data
             };
 
             return Ok(response);

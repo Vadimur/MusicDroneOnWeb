@@ -6,7 +6,7 @@
         public T Data { get; set; }
         public string Message { get; set; }
 
-        private BaseResponse(bool success, T data, string message = default)
+        private BaseResponse(bool success, T data = default, string message = default)
         {
             Data = data;
             Success = success;
@@ -14,6 +14,6 @@
         }
 
         public static BaseResponse<T> Fail(string message) => new BaseResponse<T>(false, default, message);
-        public static BaseResponse<T> Ok(T data, string message = default) => new BaseResponse<T>(true, data, message);
+        public static BaseResponse<T> Ok(T data = default, string message = default) => new BaseResponse<T>(true, data, message);
     }
 }
