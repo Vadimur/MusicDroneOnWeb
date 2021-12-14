@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.API", "MusicDron
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.Business", "MusicDrone.Business\MusicDrone.Business.csproj", "{D13F03CD-282C-42BC-940B-0F150FFA0772}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.Data", "MusicDrone.Data\MusicDrone.Data.csproj", "{C53AB64C-DA9E-4667-9C15-BEB477EBD375}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D13F03CD-282C-42BC-940B-0F150FFA0772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D13F03CD-282C-42BC-940B-0F150FFA0772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D13F03CD-282C-42BC-940B-0F150FFA0772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
