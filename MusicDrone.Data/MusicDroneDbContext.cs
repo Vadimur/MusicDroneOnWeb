@@ -16,5 +16,7 @@ namespace MusicDrone.Data
         {
             base.OnModelCreating(builder);
         }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<RoomsUsers> RoomsUsers { get; set; }
     }
 }

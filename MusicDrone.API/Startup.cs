@@ -13,6 +13,8 @@ using MusicDrone.Data;
 using MusicDrone.Data.Models;
 using MusicDrone.Data.Services;
 using MusicDrone.Data.Services.Abstraction;
+using MusicDrone.Business.Services;
+using MusicDrone.Business.Services.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MusicDrone.Data.Constants;
@@ -120,6 +122,8 @@ namespace MusicDrone.API
             services.AddSingleton(mapper);
 
             services.AddScoped<IAccountManagement, AccountManagement>();
+            services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<IRoomsUsersService, RoomsUsersService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
