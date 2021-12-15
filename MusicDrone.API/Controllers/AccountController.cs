@@ -89,7 +89,7 @@ namespace MusicDrone.API.Controllers
 
             var response = new RegisterResponse
             {
-                Username = registerResult.Data
+                Role = registerResult.Data
             };
 
             return Ok(response);
