@@ -20,10 +20,11 @@ namespace MusicDrone.Business.Services
         private readonly MusicDroneDbContext _context;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
-        public RoomService(MusicDroneDbContext context, IMapper mapper) 
+        public RoomService(MusicDroneDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager) 
         {
             _context = context;
             _mapper = mapper;
+            _userManager = userManager;
         }
         public async Task CreateAsync(RoomCreateRequestDto request)
         {

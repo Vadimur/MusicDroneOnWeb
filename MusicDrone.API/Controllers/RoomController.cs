@@ -17,9 +17,10 @@ namespace MusicDrone.API.Controllers
     {
         private readonly IRoomService _roomService;
         private readonly IMapper _mapper;
-        public RoomController(IRoomService roomService) 
+        public RoomController(IRoomService roomService, IMapper mapper) 
         {
             _roomService = roomService;
+            _mapper = mapper;
         }
         [Authorize]
         [HttpPost("createRoom")]
