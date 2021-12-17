@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MusicDrone.Data.Constants;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace MusicDrone.API
 {
@@ -30,21 +31,28 @@ namespace MusicDrone.API
         }
 
         public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 #if !DEBUG
-                string server = Configuration["DbServer"];
-                string port = Configuration["DbPort"];
-                string user = Configuration["DbUser"];
-                string password = Configuration["DbPassword"];
-                string identityDatabaseName = Configuration["IdentityDatabase"];
+            var server = Configuration["DbServer"];
+            var port = Configuration["DbPort"];
+            var user = Configuration["DbUser"];
+            var password = Configuration["DbPassword"];
+            var identityDatabaseName = Configuration["IdentityDatabase"];
                     
-                var identityConnectionString = $"Server={server},{port};Initial Catalog={identityDatabaseName};User ID={user};Password={password}";
+            var identityConnectionString = $"Server={server};Database={identityDatabaseName};User={user};Password={password};";
 #else
-            string identityConnectionString = Configuration.GetConnectionString("MusicDroneIdentityDb");
+            var identityConnectionString = Configuration.GetConnectionString("MusicDroneIdentityDb");
 #endif
+
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            ILogger logger = loggerFactory.CreateLogger<Startup>();
+            logger.LogInformation(identityConnectionString);
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<MusicDroneDbContext>()
@@ -132,9 +140,10 @@ namespace MusicDrone.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MusicDrone.API v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MusicDrone.API v1"));
 
             app.UseRouting();
 
