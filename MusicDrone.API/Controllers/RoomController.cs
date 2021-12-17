@@ -8,21 +8,24 @@ using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
 using MusicDrone.Data.Constants;
 using AutoMapper;
+using System.Linq;
 
 namespace MusicDrone.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RoomController : ControllerBase
     {
         private readonly IRoomService _roomService;
         private readonly IMapper _mapper;
+
         public RoomController(IRoomService roomService, IMapper mapper) 
         {
             _roomService = roomService;
             _mapper = mapper;
         }
-        [Authorize]
+        
         [HttpPost("createRoom")]
         public async Task<ActionResult<RoomCreateRequestModel>> CreateRoom([FromBody]RoomCreateRequestModel request) 
         {
@@ -32,14 +35,16 @@ namespace MusicDrone.API.Controllers
             var actionName = "ReturnCreatedModel";
             return CreatedAtAction(actionName, request);
         }
-        [Authorize]
+
         [HttpGet("getRooms")]
         public async Task<ActionResult<IEnumerable<RoomResponseModel>>> GetAllRooms() 
         {
-            var rooms = _mapper.Map<RoomResponseModel>(await _roomService.GetAll());
+            var existingRooms = await _roomService.GetAll();
+            var rooms = existingRooms.Select(r => _mapper.Map<RoomResponseModel>(r)).ToList();
+
             return Ok(rooms);
         }
-        [Authorize]
+
         [HttpGet("getRoom")]
         public async Task<ActionResult<RoomResponseModel>> GetConcreteRoom([FromBody]RoomGetByIdRequestModel request) 
         {
@@ -47,6 +52,7 @@ namespace MusicDrone.API.Controllers
             var room = _mapper.Map<RoomResponseModel>(await _roomService.GetById(serviceRequest));
             return Ok(room);
         }
+
         [Authorize(Roles = Roles.ADMINISTRATORS)]
         [HttpDelete("deleteRoom")]
         public async Task<ActionResult> DeleteRoom([FromBody]RoomDeleteRequestModel request) 
@@ -54,7 +60,7 @@ namespace MusicDrone.API.Controllers
             var serviceRequest = _mapper.Map<RoomDeleteRequestDto>(request);
             serviceRequest.userClaims = User;
             await _roomService.DeleteByIdAsync(serviceRequest);
-            return new NoContentResult();
+            return NoContent();
         }
     }
 }
