@@ -6,9 +6,5 @@ namespace MusicDrone.API.Models.Requests
     {
         [Required]
         public string RoomId { get; set; }
-        [Required]
-        public string UserId { get; set; }
-        [Required]
-        public string Role { get; set; }
     }
 }

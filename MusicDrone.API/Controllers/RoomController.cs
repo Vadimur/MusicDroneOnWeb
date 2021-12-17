@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using MusicDrone.API.Models.Requests;
 using MusicDrone.API.Models.Responses;
 using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
+using MusicDrone.Business.Models.Responses;
 using MusicDrone.Data.Constants;
 using AutoMapper;
 using System.Linq;
@@ -25,41 +27,43 @@ namespace MusicDrone.API.Controllers
             _roomService = roomService;
             _mapper = mapper;
         }
-        
-        [HttpPost("createRoom")]
+        [HttpPost]
         public async Task<ActionResult<RoomCreateRequestModel>> CreateRoom([FromBody]RoomCreateRequestModel request) 
         {
-            var serviceRequest = _mapper.Map<RoomCreateRequestDto>(request);
-            serviceRequest.userClaims = User;
-            await _roomService.CreateAsync(serviceRequest);
-            var actionName = "ReturnCreatedModel";
-            return CreatedAtAction(actionName, request);
+            var serviceRequest = new RoomCreateRequestDto { Name = request.Name, UserClaims = User };
+            var serviceResponse = await _roomService.CreateAsync(serviceRequest);
+            return CreatedAtAction("GetConcreteRoom", new { id = serviceResponse.Id }, request);
         }
-
-        [HttpGet("getRooms")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<RoomResponseModel>>> GetAllRooms() 
         {
-            var existingRooms = await _roomService.GetAll();
-            var rooms = existingRooms.Select(r => _mapper.Map<RoomResponseModel>(r)).ToList();
-
+            var serviceResponse = await _roomService.GetAll();
+            var rooms = _mapper.Map<IEnumerable<RoomResponseDto>,IEnumerable<RoomResponseModel>>(serviceResponse);
             return Ok(rooms);
         }
-
-        [HttpGet("getRoom")]
-        public async Task<ActionResult<RoomResponseModel>> GetConcreteRoom([FromBody]RoomGetByIdRequestModel request) 
+        [ActionName("GetConcreteRoom")]
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<RoomResponseModel>> GetConcreteRoom(string id) 
         {
-            var serviceRequest = _mapper.Map<RoomGetByIdRequestDto>(request);
-            var room = _mapper.Map<RoomResponseModel>(await _roomService.GetById(serviceRequest));
+            var serviceRequest = new RoomGetByIdRequestDto { Id = new Guid(id) };
+            var serviceResponse = await _roomService.GetById(serviceRequest);
+            if (serviceResponse == null) 
+            {
+                return NotFound();
+            }
+            var room = new RoomResponseModel { Id = serviceResponse.Id.ToString(), Name = serviceResponse.Name };
             return Ok(room);
         }
-
-        [Authorize(Roles = Roles.ADMINISTRATORS)]
-        [HttpDelete("deleteRoom")]
+        [HttpDelete]
         public async Task<ActionResult> DeleteRoom([FromBody]RoomDeleteRequestModel request) 
         {
-            var serviceRequest = _mapper.Map<RoomDeleteRequestDto>(request);
-            serviceRequest.userClaims = User;
-            await _roomService.DeleteByIdAsync(serviceRequest);
+            var serviceRequest = new RoomDeleteRequestDto { Id = new Guid(request.Id), UserClaims = User };
+            var serviceResponse = await _roomService.DeleteByIdAsync(serviceRequest);
+            if (serviceResponse.Exists == false) 
+            {
+                return NotFound();
+            }
             return NoContent();
         }
     }

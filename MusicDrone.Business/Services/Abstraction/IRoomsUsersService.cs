@@ -12,6 +12,6 @@ namespace MusicDrone.Business.Services.Abstraction
     {
         Task CreateAsync(RoomsUsersCreateRequestDto request);
         Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request);
-        Task DeleteByUserIdAsync(RoomsUsersDeleteRequestDto request);
+        Task<RoomsUsersDeleteByUserIdResponse> DeleteByUserIdAsync(RoomsUsersDeleteRequestDto request);
     }
 }

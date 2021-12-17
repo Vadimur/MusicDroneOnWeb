@@ -1,8 +1,10 @@
-﻿namespace MusicDrone.Data.Models
+﻿using System;
+
+namespace MusicDrone.Data.Models
 {
     public class Room
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 }

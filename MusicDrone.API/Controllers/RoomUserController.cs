@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,41 +11,41 @@ using AutoMapper;
 
 namespace MusicDrone.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RoomUserController : ControllerBase
     {
         private readonly IRoomsUsersService _roomsUsersService;
-        private readonly IMapper _mapper;
-        public RoomUserController(IRoomsUsersService roomsUsersService, IMapper mapper)
+        public RoomUserController(IRoomsUsersService roomsUsersService)
         {
             _roomsUsersService = roomsUsersService;
-            _mapper = mapper;
         }
-        [Authorize]
-        [HttpPost("enterRoom")]
+        [HttpPost]
         public async Task<ActionResult> EnterRoom([FromBody]RoomsUsersCreateRequestModel request)
         {
-            var serviceRequest = _mapper.Map<RoomsUsersCreateRequestDto>(request);
+            var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = new Guid(request.RoomId), UserClaims = User };
             await _roomsUsersService.CreateAsync(serviceRequest);
-            var actionName = "ReturnCreatedModel";
-            return CreatedAtAction(actionName, request);
+            return Ok();
         }
-        [Authorize]
-        [HttpGet("usersInRoom")]
-        public async Task<ActionResult<IEnumerable<RoomsUsersGetByRoomIdResponseModel>>> GetAllUsersInRoom([FromBody] RoomsUsersGetByRoomIdRequestModel request) 
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<IEnumerable<RoomsUsersGetByRoomIdResponseModel>>> GetAllUsersInRoom(string id) 
         {
-            var serviceRequest = _mapper.Map<RoomsUsersGetByRoomIdRequestDto>(request);
+            var serviceRequest = new RoomsUsersGetByRoomIdRequestDto { RoomId = new Guid(id) };
             var users = await _roomsUsersService.GetAllInRoom(serviceRequest);
             return Ok(users);
         }
-        [Authorize]
-        [HttpDelete("exitTheRoom")]
+        [HttpDelete]
         public async Task<ActionResult> ExitTheRoom([FromBody] RoomsUsersDeleteRequestModel request) 
         {
-            var serviceRequest = _mapper.Map<RoomsUsersDeleteRequestDto>(request);
-            await _roomsUsersService.DeleteByUserIdAsync(serviceRequest);
-            return new NoContentResult();
+            var serviceRequest = new RoomsUsersDeleteRequestDto { RoomId = new Guid(request.RoomId), UserClaims = User };
+            var serviceResponse = await _roomsUsersService.DeleteByUserIdAsync(serviceRequest);
+            if (serviceResponse.Exists == false)
+            {
+                return NotFound();
+            }
+            return NoContent();
         }
     }
 }
