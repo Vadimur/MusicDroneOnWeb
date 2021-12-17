@@ -30,7 +30,12 @@ namespace MusicDrone.Data.Services
         {
             var result = await _signInManager.PasswordSignInAsync(credentials.Login, credentials.Password, false, false);
 
-            var token = result.Succeeded ? await GetTokenAsync(credentials.Login) : string.Empty;
+            if (!result.Succeeded)
+            {
+                return BaseResponse<string>.Fail("Invalid login or password");
+            }
+
+            var token = await GetTokenAsync(credentials.Login);
 
             return BaseResponse<string>.Ok(token);
         }

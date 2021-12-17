@@ -35,7 +35,7 @@ namespace MusicDrone.API.Controllers
 
             if (!result.Success)
             {
-                return Unauthorized("Invalid login or password");
+                return Unauthorized(result.Message);
             }
 
             var response = new LoginResponse
