@@ -18,18 +18,21 @@ namespace MusicDrone.Business.Services
     public class RoomsUsersService : IRoomsUsersService
     {
         private readonly MusicDroneDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public RoomsUsersService(MusicDroneDbContext context, UserManager<ApplicationUser> userManager)
+        public RoomsUsersService(MusicDroneDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
-        public async Task CreateAsync(RoomsUsersCreateRequestDto request)
+        public async Task<RoomsUsersCreateResponseDto> CreateAsync(RoomsUsersCreateRequestDto request)
         {
-            var requestuser = await _userManager.GetUserAsync(request.UserClaims);
-            var roomuser = new RoomsUsers { RoomId = request.RoomId, UserId = new Guid(requestuser.Id), Role = Roles.USERS };
-            await _context.RoomsUsers.AddAsync(roomuser);
-            await _context.SaveChangesAsync();
+            var validate = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId && r.UserId == request.UserId).FirstOrDefaultAsync();
+            if (validate is null)
+            {
+                var roomuser = new RoomsUsers { RoomId = request.RoomId, UserId = request.UserId, Role = Roles.USERS };
+                await _context.RoomsUsers.AddAsync(roomuser);
+                await _context.SaveChangesAsync();
+                return new RoomsUsersCreateResponseDto { Exists = false };
+            }
+            else return new RoomsUsersCreateResponseDto { Exists = true };
         }
         public async Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request)
         {
@@ -43,18 +46,26 @@ namespace MusicDrone.Business.Services
             }
             return users;
         }
-        public async Task<RoomsUsersDeleteByUserIdResponse> DeleteByUserIdAsync(RoomsUsersDeleteRequestDto request)
+        public async Task<RoomsUsersDeleteByUserIdResponseDto> DeleteByUserIdAsync(RoomsUsersDeleteRequestDto request)
         {
-            var user = await _userManager.GetUserAsync(request.UserClaims);
-            var userId = new Guid(user.Id);
-            var roomuser = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId && r.UserId == userId).FirstOrDefaultAsync();
-            if (roomuser is not null)
+            var roomuser = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId && r.UserId == request.UserId).FirstOrDefaultAsync();
+            var response = new RoomsUsersDeleteByUserIdResponseDto { Exists = false };
+            if (roomuser != null)
             {
+                response.Exists = true;
+                if (roomuser.Role == Roles.ADMINISTRATORS)
+                {
+                    response.isAdministrator = true;
+                    return response;
+                }
                 _context.RoomsUsers.Remove(roomuser);
                 await _context.SaveChangesAsync();
-                return new RoomsUsersDeleteByUserIdResponse { Exists = true };
+                return response;
             }
-            else return new RoomsUsersDeleteByUserIdResponse { Exists = false }; 
+            else 
+            {
+                return response;
+            }
         }
     }
 }

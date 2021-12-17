@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,9 +9,7 @@ using MusicDrone.API.Models.Responses;
 using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
 using MusicDrone.Business.Models.Responses;
-using MusicDrone.Data.Constants;
 using AutoMapper;
-using System.Linq;
 
 namespace MusicDrone.API.Controllers
 {
@@ -30,7 +29,8 @@ namespace MusicDrone.API.Controllers
         [HttpPost]
         public async Task<ActionResult<RoomCreateRequestModel>> CreateRoom([FromBody]RoomCreateRequestModel request) 
         {
-            var serviceRequest = new RoomCreateRequestDto { Name = request.Name, UserClaims = User };
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var serviceRequest = new RoomCreateRequestDto { Name = request.Name, UserId = new Guid(userId) };
             var serviceResponse = await _roomService.CreateAsync(serviceRequest);
             return CreatedAtAction("GetConcreteRoom", new { id = serviceResponse.Id }, request);
         }
@@ -58,7 +58,7 @@ namespace MusicDrone.API.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteRoom([FromBody]RoomDeleteRequestModel request) 
         {
-            var serviceRequest = new RoomDeleteRequestDto { Id = new Guid(request.Id), UserClaims = User };
+            var serviceRequest = new RoomDeleteRequestDto { Id = new Guid(request.Id), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
             var serviceResponse = await _roomService.DeleteByIdAsync(serviceRequest);
             if (serviceResponse.Exists == false) 
             {

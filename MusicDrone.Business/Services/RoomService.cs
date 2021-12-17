@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
@@ -11,26 +9,22 @@ using MusicDrone.Business.Models.Responses;
 using MusicDrone.Data;
 using MusicDrone.Data.Constants;
 using MusicDrone.Data.Models;
-using AutoMapper;
 
 namespace MusicDrone.Business.Services
 {
     public class RoomService:IRoomService
     {
         private readonly MusicDroneDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public RoomService(MusicDroneDbContext context, UserManager<ApplicationUser> userManager) 
+        public RoomService(MusicDroneDbContext context) 
         {
             _context = context;
-            _userManager = userManager;
         }
         public async Task<RoomResponseDto> CreateAsync(RoomCreateRequestDto request)
         {
-            var user = await _userManager.GetUserAsync(request.UserClaims);
             var room = new Room { Name = request.Name };
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
-            await AddFirstUserToRoom(room, user);
+            await AddFirstUserToRoom(room, request.UserId);
             var response = new RoomResponseDto { Id = room.Id, Name = room.Name };
             return response;
         }
@@ -63,8 +57,7 @@ namespace MusicDrone.Business.Services
         }
         public async Task<RoomDeleteResponseDto> DeleteByIdAsync(RoomDeleteRequestDto request) 
         {
-            var deleter = await _userManager.GetUserAsync(request.UserClaims);
-            var validate = _context.RoomsUsers.Where(r => r.RoomId == request.Id && r.UserId.ToString() == deleter.Id && r.Role == Roles.ADMINISTRATORS);
+            var validate = _context.RoomsUsers.Where(r => r.RoomId == request.Id && r.UserId == request.UserId && r.Role == Roles.ADMINISTRATORS);
             if (validate.Count() > 0)
             {
                 var room = await _context.Rooms.Where(r => r.Id == request.Id).FirstOrDefaultAsync();
@@ -79,10 +72,10 @@ namespace MusicDrone.Business.Services
             }
             else return new RoomDeleteResponseDto { Exists = false };
         }
-        private async Task AddFirstUserToRoom(Room requestedRoom, ApplicationUser requestedUser) 
+        private async Task AddFirstUserToRoom(Room requestedRoom, Guid userId) 
         {
             var room = await _context.Rooms.FindAsync(requestedRoom.Id);
-            var roomsusers = new RoomsUsers { RoomId = room.Id, UserId = Guid.Parse(requestedUser.Id), Role = Roles.ADMINISTRATORS };
+            var roomsusers = new RoomsUsers { RoomId = room.Id, UserId = userId, Role = Roles.ADMINISTRATORS };
             await _context.RoomsUsers.AddAsync(roomsusers);
             await _context.SaveChangesAsync();
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,6 @@ using MusicDrone.API.Models.Requests;
 using MusicDrone.API.Models.Responses;
 using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
-using AutoMapper;
 
 namespace MusicDrone.API.Controllers
 {
@@ -24,8 +24,12 @@ namespace MusicDrone.API.Controllers
         [HttpPost]
         public async Task<ActionResult> EnterRoom([FromBody]RoomsUsersCreateRequestModel request)
         {
-            var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = new Guid(request.RoomId), UserClaims = User };
-            await _roomsUsersService.CreateAsync(serviceRequest);
+            var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = new Guid(request.RoomId), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
+            var serviceResponse = await _roomsUsersService.CreateAsync(serviceRequest);
+            if (serviceResponse.Exists != false)
+            {
+                return Conflict();
+            }
             return Ok();
         }
         [HttpGet]
@@ -39,11 +43,15 @@ namespace MusicDrone.API.Controllers
         [HttpDelete]
         public async Task<ActionResult> ExitTheRoom([FromBody] RoomsUsersDeleteRequestModel request) 
         {
-            var serviceRequest = new RoomsUsersDeleteRequestDto { RoomId = new Guid(request.RoomId), UserClaims = User };
+            var serviceRequest = new RoomsUsersDeleteRequestDto { RoomId = new Guid(request.RoomId), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
             var serviceResponse = await _roomsUsersService.DeleteByUserIdAsync(serviceRequest);
             if (serviceResponse.Exists == false)
             {
                 return NotFound();
+            }
+            if (serviceResponse.isAdministrator == true) 
+            {
+                return Forbid();
             }
             return NoContent();
         }
