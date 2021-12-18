@@ -54,7 +54,7 @@ namespace MusicDrone.API
             ILogger logger = loggerFactory.CreateLogger<Startup>();
             logger.LogInformation(identityConnectionString);
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<MusicDroneDbContext>()
                 .AddDefaultTokenProviders();
 
