@@ -58,8 +58,10 @@ namespace MusicDrone.Business.Services
         public async Task<RoomDeleteResponseDto> DeleteByIdAsync(RoomDeleteRequestDto request) 
         {
             var validate = _context.RoomsUsers.Where(r => r.RoomId == request.Id && r.UserId == request.UserId && r.Role == Roles.ADMINISTRATORS);
+            var response = new RoomDeleteResponseDto { Exists = false };
             if (validate.Count() > 0)
             {
+                response.Exists = true;
                 var room = await _context.Rooms.Where(r => r.Id == request.Id).FirstOrDefaultAsync();
                 var roomsusers = await _context.RoomsUsers.Where(r => r.RoomId == request.Id).ToListAsync();
                 foreach (var roomuser in roomsusers)
@@ -68,9 +70,9 @@ namespace MusicDrone.Business.Services
                 }
                 _context.Rooms.Remove(room);
                 await _context.SaveChangesAsync();
-                return new RoomDeleteResponseDto { Exists = true };
+                return response;
             }
-            else return new RoomDeleteResponseDto { Exists = false };
+            else return response;
         }
         private async Task AddFirstUserToRoom(Room requestedRoom, Guid userId) 
         {

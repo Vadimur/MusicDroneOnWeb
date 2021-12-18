@@ -40,6 +40,13 @@ namespace MusicDrone.API.Controllers
             var users = await _roomsUsersService.GetAllInRoom(serviceRequest);
             return Ok(users);
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RoomsUsersGetByUserIdResponseModel>>> GetAllRoomsByUser()
+        {
+            var serviceRequest = new RoomsUsersGetByUserIdRequestDto { UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)) };
+            var rooms = await _roomsUsersService.GetAllRoomsByUser(serviceRequest);
+            return Ok(rooms);
+        }
         [HttpDelete]
         public async Task<ActionResult> ExitTheRoom([FromBody] RoomsUsersDeleteRequestModel request) 
         {

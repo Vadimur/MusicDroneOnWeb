@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
@@ -11,7 +8,6 @@ using MusicDrone.Business.Models.Responses;
 using MusicDrone.Data;
 using MusicDrone.Data.Constants;
 using MusicDrone.Data.Models;
-using AutoMapper;
 
 namespace MusicDrone.Business.Services
 {
@@ -24,15 +20,20 @@ namespace MusicDrone.Business.Services
         }
         public async Task<RoomsUsersCreateResponseDto> CreateAsync(RoomsUsersCreateRequestDto request)
         {
+            var response = new RoomsUsersCreateResponseDto { Exists = false };
             var validate = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId && r.UserId == request.UserId).FirstOrDefaultAsync();
-            if (validate is null)
+            if (validate == null)
             {
                 var roomuser = new RoomsUsers { RoomId = request.RoomId, UserId = request.UserId, Role = Roles.USERS };
                 await _context.RoomsUsers.AddAsync(roomuser);
                 await _context.SaveChangesAsync();
-                return new RoomsUsersCreateResponseDto { Exists = false };
+                return response;
             }
-            else return new RoomsUsersCreateResponseDto { Exists = true };
+            else 
+            {
+                response.Exists = true;
+                return response; 
+            }
         }
         public async Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request)
         {
@@ -45,6 +46,18 @@ namespace MusicDrone.Business.Services
                 users.Add(responseUser);
             }
             return users;
+        }
+        public async Task<IEnumerable<RoomsUsersGetByUserIdResponseDto>> GetAllRoomsByUser(RoomsUsersGetByUserIdRequestDto request) 
+        {
+            var roomusers = await _context.RoomsUsers.Where(r => r.UserId == request.UserId).ToListAsync();
+            var rooms = new List<RoomsUsersGetByUserIdResponseDto>();
+            foreach (var roomuser in roomusers)
+            {
+                var room = await _context.Rooms.Where(u => u.Id == roomuser.RoomId).FirstOrDefaultAsync();
+                var responseRoom = new RoomsUsersGetByUserIdResponseDto { RoomId = room.Id, RoomName = room.Name };
+                rooms.Add(responseRoom);
+            }
+            return rooms;
         }
         public async Task<RoomsUsersDeleteByUserIdResponseDto> DeleteByUserIdAsync(RoomsUsersDeleteRequestDto request)
         {
