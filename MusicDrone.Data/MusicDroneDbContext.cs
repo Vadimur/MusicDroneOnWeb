@@ -22,12 +22,12 @@ namespace MusicDrone.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            var adminRoleId = Guid.NewGuid();
-            var adminId = Guid.NewGuid();
+            var adminRoleId = new Guid("bc963479-34f3-42b7-8d32-41bae9c47742");
+            var adminId = new Guid("cdd4f090-d8aa-4c14-9cd5-fe3464ff3bbb");
 
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = Guid.NewGuid(), Name = Constants.Roles.USERS, NormalizedName = Constants.Roles.USERS.ToUpper() });
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = Guid.NewGuid(), Name = Constants.Roles.PREMIUMUSERS, NormalizedName = Constants.Roles.PREMIUMUSERS.ToUpper() });
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = Guid.NewGuid(), Name = Constants.Roles.MODERATORS, NormalizedName = Constants.Roles.MODERATORS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = new Guid("85b19000-bc92-435a-8d6b-ea780217d030"), Name = Constants.Roles.USERS, NormalizedName = Constants.Roles.USERS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = new Guid("e3e7bd47-14c6-4a22-81c7-9381d1b4db70"), Name = Constants.Roles.PREMIUMUSERS, NormalizedName = Constants.Roles.PREMIUMUSERS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = new Guid("7d0900cc-5def-4708-b88c-9dd66c7db1ef"), Name = Constants.Roles.MODERATORS, NormalizedName = Constants.Roles.MODERATORS.ToUpper() });
             modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = adminRoleId, Name = Constants.Roles.ADMINISTRATORS, NormalizedName = Constants.Roles.ADMINISTRATORS.ToUpper() });
 
 
@@ -46,7 +46,8 @@ namespace MusicDrone.Data
                     NormalizedEmail = email.ToUpper(),
                     FirstName = "AdminName",
                     LastName = "AdminLastName",
-                    PasswordHash = hasher.HashPassword(null, AuthorizationConstants.DEFAULT_PASSWORD)
+                    PasswordHash = hasher.HashPassword(null, AuthorizationConstants.DEFAULT_PASSWORD),
+                    SecurityStamp = adminId.ToString()
                 });
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(

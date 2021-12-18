@@ -10,8 +10,8 @@ using MusicDrone.Data;
 namespace MusicDrone.Data.Migrations
 {
     [DbContext(typeof(MusicDroneDbContext))]
-    [Migration("20211218102412_MakeIdGuid")]
-    partial class MakeIdGuid
+    [Migration("20211218122552_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -105,8 +105,8 @@ namespace MusicDrone.Data.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("047f5983-1f48-4f18-a7ec-e22a4842f565"),
-                            RoleId = new Guid("46024bfa-dad5-48ef-8085-551f628b1028")
+                            UserId = new Guid("cdd4f090-d8aa-4c14-9cd5-fe3464ff3bbb"),
+                            RoleId = new Guid("bc963479-34f3-42b7-8d32-41bae9c47742")
                         });
                 });
 
@@ -159,29 +159,29 @@ namespace MusicDrone.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("fd1f380c-0251-44b1-bc43-5452ca8aae14"),
-                            ConcurrencyStamp = "13f77539-df01-4269-8b64-80df2c5414bb",
+                            Id = new Guid("85b19000-bc92-435a-8d6b-ea780217d030"),
+                            ConcurrencyStamp = "1818e045-15f8-4e58-8aa1-1a2f58e7e3d4",
                             Name = "Users",
                             NormalizedName = "USERS"
                         },
                         new
                         {
-                            Id = new Guid("8df8a551-d3a1-49dd-b77b-86b70f389542"),
-                            ConcurrencyStamp = "efa027e3-a214-4ddb-bf49-2974c327c801",
+                            Id = new Guid("e3e7bd47-14c6-4a22-81c7-9381d1b4db70"),
+                            ConcurrencyStamp = "cb915358-d127-4eb7-af2b-35047e08d30e",
                             Name = "PremiumUsers",
                             NormalizedName = "PREMIUMUSERS"
                         },
                         new
                         {
-                            Id = new Guid("8a093fc7-fbf4-4236-961e-523a30912657"),
-                            ConcurrencyStamp = "947e932d-57fc-4a1c-9fef-716f4b6e79a7",
+                            Id = new Guid("7d0900cc-5def-4708-b88c-9dd66c7db1ef"),
+                            ConcurrencyStamp = "3949fdf9-4f1e-4691-859b-e7ed47c97b6e",
                             Name = "Moderators",
                             NormalizedName = "MODERATORS"
                         },
                         new
                         {
-                            Id = new Guid("46024bfa-dad5-48ef-8085-551f628b1028"),
-                            ConcurrencyStamp = "ed2ff921-e548-446f-96eb-d3ace63a95c8",
+                            Id = new Guid("bc963479-34f3-42b7-8d32-41bae9c47742"),
+                            ConcurrencyStamp = "3d0b3d2d-0e41-4c01-96fa-275ee041d03a",
                             Name = "Administrators",
                             NormalizedName = "ADMINISTRATORS"
                         });
@@ -261,9 +261,9 @@ namespace MusicDrone.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("047f5983-1f48-4f18-a7ec-e22a4842f565"),
+                            Id = new Guid("cdd4f090-d8aa-4c14-9cd5-fe3464ff3bbb"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0a62193b-4409-4858-8fc6-4aad83e55cc3",
+                            ConcurrencyStamp = "4024b053-ee5e-415a-98b4-466868ea6950",
                             Email = "admin@music.drone",
                             EmailConfirmed = false,
                             FirstName = "AdminName",
@@ -271,8 +271,9 @@ namespace MusicDrone.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@MUSIC.DRONE",
                             NormalizedUserName = "ADMIN@MUSIC.DRONE",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJNbzXh4RvsVLUHT/hijKzTZnuNkyQLLUC5UIGiFRFIeOwuRzQm4p5Ynso1psfq0FQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDve51iL/rXOsZIdpyijvbPcQ9SvPtc1VYWZ1iqPUKK29YVyta78qsGiJ3g0SqOPqg==",
                             PhoneNumberConfirmed = false,
+                            SecurityStamp = "cdd4f090-d8aa-4c14-9cd5-fe3464ff3bbb",
                             TwoFactorEnabled = false,
                             UserName = "admin@music.drone"
                         });
