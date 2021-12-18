@@ -40,7 +40,7 @@ namespace MusicDrone.Business.Services
             var users = new List<RoomsUsersGetByRoomIdResponseDto>();
             foreach (var roomuser in roomusers)
             {
-                var user = await _context.Users.Where(u => u.Id == roomuser.UserId.ToString()).FirstOrDefaultAsync();
+                var user = await _context.Users.Where(u => u.Id == roomuser.UserId).FirstOrDefaultAsync();
                 var responseUser = new RoomsUsersGetByRoomIdResponseDto { FirstName = user.FirstName, LastName = user.LastName };
                 users.Add(responseUser);
             }

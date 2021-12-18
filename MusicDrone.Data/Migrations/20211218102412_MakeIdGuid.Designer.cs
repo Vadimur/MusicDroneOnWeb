@@ -10,7 +10,7 @@ using MusicDrone.Data;
 namespace MusicDrone.Data.Migrations
 {
     [DbContext(typeof(MusicDroneDbContext))]
-    [Migration("20211218010501_MakeIdGuid")]
+    [Migration("20211218102412_MakeIdGuid")]
     partial class MakeIdGuid
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,10 +21,119 @@ namespace MusicDrone.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("047f5983-1f48-4f18-a7ec-e22a4842f565"),
+                            RoleId = new Guid("46024bfa-dad5-48ef-8085-551f628b1028")
+                        });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("MusicDrone.Data.Models.ApplicationRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -50,149 +159,39 @@ namespace MusicDrone.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c12bc81e-c709-466a-b5c0-b871e6a22695",
-                            ConcurrencyStamp = "623be92e-0240-4ad1-8ae0-fe5b789d66b2",
+                            Id = new Guid("fd1f380c-0251-44b1-bc43-5452ca8aae14"),
+                            ConcurrencyStamp = "13f77539-df01-4269-8b64-80df2c5414bb",
                             Name = "Users",
                             NormalizedName = "USERS"
                         },
                         new
                         {
-                            Id = "41ae5496-f16b-4767-8815-fa14d80069e8",
-                            ConcurrencyStamp = "118e8680-d2c2-4f10-9209-3ff75fb0e8cd",
+                            Id = new Guid("8df8a551-d3a1-49dd-b77b-86b70f389542"),
+                            ConcurrencyStamp = "efa027e3-a214-4ddb-bf49-2974c327c801",
                             Name = "PremiumUsers",
                             NormalizedName = "PREMIUMUSERS"
                         },
                         new
                         {
-                            Id = "0b8792fc-8455-4eba-8a03-186a444294df",
-                            ConcurrencyStamp = "2ae7bd71-19bd-4596-a0bc-ef1828d1d2c7",
+                            Id = new Guid("8a093fc7-fbf4-4236-961e-523a30912657"),
+                            ConcurrencyStamp = "947e932d-57fc-4a1c-9fef-716f4b6e79a7",
                             Name = "Moderators",
                             NormalizedName = "MODERATORS"
                         },
                         new
                         {
-                            Id = "a5810127-d7fd-452c-9508-f26634640999",
-                            ConcurrencyStamp = "fcd17cba-cb13-420a-a510-7a0b62eaeb8b",
+                            Id = new Guid("46024bfa-dad5-48ef-8085-551f628b1028"),
+                            ConcurrencyStamp = "ed2ff921-e548-446f-96eb-d3ace63a95c8",
                             Name = "Administrators",
                             NormalizedName = "ADMINISTRATORS"
                         });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "d5357248-d101-4414-b416-7a236e7ee713",
-                            RoleId = "a5810127-d7fd-452c-9508-f26634640999"
-                        });
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens");
-                });
-
             modelBuilder.Entity("MusicDrone.Data.Models.ApplicationUser", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -262,9 +261,9 @@ namespace MusicDrone.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d5357248-d101-4414-b416-7a236e7ee713",
+                            Id = new Guid("047f5983-1f48-4f18-a7ec-e22a4842f565"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c67eb37d-8aa1-493f-aef2-2c446e6d3ce1",
+                            ConcurrencyStamp = "0a62193b-4409-4858-8fc6-4aad83e55cc3",
                             Email = "admin@music.drone",
                             EmailConfirmed = false,
                             FirstName = "AdminName",
@@ -272,9 +271,8 @@ namespace MusicDrone.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@MUSIC.DRONE",
                             NormalizedUserName = "ADMIN@MUSIC.DRONE",
-                            PasswordHash = "AQAAAAEAACcQAAAAEK8rz4AnE8z8Tqxm1VDvp9uxtN4MGu+d9wrmTgr1WS5e+jdx5WNGojFjgBaFf2D/Fg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJNbzXh4RvsVLUHT/hijKzTZnuNkyQLLUC5UIGiFRFIeOwuRzQm4p5Ynso1psfq0FQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "37e13681-5bab-4a04-9bc6-6f6c69f5a1d5",
                             TwoFactorEnabled = false,
                             UserName = "admin@music.drone"
                         });
@@ -314,16 +312,16 @@ namespace MusicDrone.Data.Migrations
                     b.ToTable("RoomsUsers");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("MusicDrone.Data.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.HasOne("MusicDrone.Data.Models.ApplicationUser", null)
                         .WithMany()
@@ -332,7 +330,7 @@ namespace MusicDrone.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.HasOne("MusicDrone.Data.Models.ApplicationUser", null)
                         .WithMany()
@@ -341,9 +339,9 @@ namespace MusicDrone.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("MusicDrone.Data.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -356,7 +354,7 @@ namespace MusicDrone.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.HasOne("MusicDrone.Data.Models.ApplicationUser", null)
                         .WithMany()

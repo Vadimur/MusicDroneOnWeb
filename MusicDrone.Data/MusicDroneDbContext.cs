@@ -7,7 +7,7 @@ using System;
 
 namespace MusicDrone.Data
 {
-    public class MusicDroneDbContext : IdentityDbContext<ApplicationUser>
+    public class MusicDroneDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomsUsers> RoomsUsers { get; set; }
@@ -22,24 +22,24 @@ namespace MusicDrone.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            var adminRoleId = Guid.NewGuid().ToString();
+            var adminRoleId = Guid.NewGuid();
+            var adminId = Guid.NewGuid();
 
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Id = Guid.NewGuid().ToString(), Name = Constants.Roles.USERS, NormalizedName = Constants.Roles.USERS.ToUpper() });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Id = Guid.NewGuid().ToString(), Name = Constants.Roles.PREMIUMUSERS, NormalizedName = Constants.Roles.PREMIUMUSERS.ToUpper() });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Id = Guid.NewGuid().ToString(), Name = Constants.Roles.MODERATORS, NormalizedName = Constants.Roles.MODERATORS.ToUpper() });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Id = adminRoleId, Name = Constants.Roles.ADMINISTRATORS, NormalizedName = Constants.Roles.ADMINISTRATORS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = Guid.NewGuid(), Name = Constants.Roles.USERS, NormalizedName = Constants.Roles.USERS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = Guid.NewGuid(), Name = Constants.Roles.PREMIUMUSERS, NormalizedName = Constants.Roles.PREMIUMUSERS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = Guid.NewGuid(), Name = Constants.Roles.MODERATORS, NormalizedName = Constants.Roles.MODERATORS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = adminRoleId, Name = Constants.Roles.ADMINISTRATORS, NormalizedName = Constants.Roles.ADMINISTRATORS.ToUpper() });
 
 
             //a hasher to hash the password before seeding the user to the db
             var hasher = new PasswordHasher<IdentityUser>();
-
-            var userId = Guid.NewGuid().ToString();
+            
             var username = "admin@music.drone";
             var email = "admin@music.drone";
             modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
-                    Id = userId,
+                    Id = adminId,
                     UserName = username,
                     NormalizedUserName = username.ToUpper(),
                     Email = email,
@@ -49,11 +49,11 @@ namespace MusicDrone.Data
                     PasswordHash = hasher.HashPassword(null, AuthorizationConstants.DEFAULT_PASSWORD)
                 });
 
-            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
-                new IdentityUserRole<string>
+            modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(
+                new IdentityUserRole<Guid>
                 {
                     RoleId = adminRoleId,
-                    UserId = userId
+                    UserId = adminId
                 }
             );
         }
