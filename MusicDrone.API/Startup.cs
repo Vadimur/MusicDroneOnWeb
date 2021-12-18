@@ -132,6 +132,8 @@ namespace MusicDrone.API
             services.AddScoped<IAccountManagement, AccountManagement>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IRoomsUsersService, RoomsUsersService>();
+            
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -141,6 +143,10 @@ namespace MusicDrone.API
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseCors(
+                options => options.WithOrigins("*").AllowAnyMethod().AllowAnyHeader()
+            );
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MusicDrone.API v1"));
