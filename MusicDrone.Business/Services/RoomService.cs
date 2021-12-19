@@ -23,11 +23,15 @@ namespace MusicDrone.Business.Services
         {
             var room = new Room { Name = request.Name };
             await _context.Rooms.AddAsync(room);
+            
+            var roomUser = new RoomUser { RoomId = room.Id, UserId = request.UserId, Role = RoomUserRole.Owner };
+            await _context.RoomsUsers.AddAsync(roomUser);
+            
             await _context.SaveChangesAsync();
-            await AddFirstUserToRoom(room, request.UserId);
             var response = new RoomResponseDto { Id = room.Id, Name = room.Name };
             return response;
         }
+        
         public async Task<IEnumerable<RoomResponseDto>> GetAll() 
         {
             var rooms =
@@ -57,7 +61,7 @@ namespace MusicDrone.Business.Services
         }
         public async Task<RoomDeleteResponseDto> DeleteByIdAsync(RoomDeleteRequestDto request) 
         {
-            var validate = _context.RoomsUsers.Where(r => r.RoomId == request.Id && r.UserId == request.UserId && r.Role == Roles.ADMINISTRATORS);
+            var validate = _context.RoomsUsers.Where(r => r.RoomId == request.Id && r.UserId == request.UserId && r.Role == RoomUserRole.Owner);
             var response = new RoomDeleteResponseDto { Exists = false };
             if (validate.Count() > 0)
             {
@@ -73,13 +77,6 @@ namespace MusicDrone.Business.Services
                 return response;
             }
             else return response;
-        }
-        private async Task AddFirstUserToRoom(Room requestedRoom, Guid userId) 
-        {
-            var room = await _context.Rooms.FindAsync(requestedRoom.Id);
-            var roomsusers = new RoomsUsers { RoomId = room.Id, UserId = userId, Role = Roles.ADMINISTRATORS };
-            await _context.RoomsUsers.AddAsync(roomsusers);
-            await _context.SaveChangesAsync();
         }
     }
 }

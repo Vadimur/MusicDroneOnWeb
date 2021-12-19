@@ -2,10 +2,10 @@
 
 namespace MusicDrone.Data.Models
 {
-    public class RoomsUsers : BaseEntity<Guid>
+    public class RoomUser : BaseEntity<Guid>
     {
         public Guid RoomId { get; set; }
         public Guid UserId { get; set; }
-        public string Role { get; set; }
+        public RoomUserRole Role { get; set; }
     }
 }

@@ -24,8 +24,8 @@ namespace MusicDrone.Business.Services
             var validate = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId && r.UserId == request.UserId).FirstOrDefaultAsync();
             if (validate == null)
             {
-                var roomuser = new RoomsUsers { RoomId = request.RoomId, UserId = request.UserId, Role = Roles.USERS };
-                await _context.RoomsUsers.AddAsync(roomuser);
+                var roomUser = new RoomUser { RoomId = request.RoomId, UserId = request.UserId, Role = RoomUserRole.User };
+                await _context.RoomsUsers.AddAsync(roomUser);
                 await _context.SaveChangesAsync();
                 return response;
             }
@@ -37,11 +37,11 @@ namespace MusicDrone.Business.Services
         }
         public async Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request)
         {
-            var roomusers = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId).ToListAsync();
+            var roomUsers = await _context.RoomsUsers.Where(r => r.RoomId == request.RoomId).ToListAsync();
             var users = new List<RoomsUsersGetByRoomIdResponseDto>();
-            foreach (var roomuser in roomusers)
+            foreach (var roomUser in roomUsers)
             {
-                var user = await _context.Users.Where(u => u.Id == roomuser.UserId).FirstOrDefaultAsync();
+                var user = await _context.Users.Where(u => u.Id == roomUser.UserId).FirstOrDefaultAsync();
                 var responseUser = new RoomsUsersGetByRoomIdResponseDto { FirstName = user.FirstName, LastName = user.LastName };
                 users.Add(responseUser);
             }
@@ -49,11 +49,11 @@ namespace MusicDrone.Business.Services
         }
         public async Task<IEnumerable<RoomsUsersGetByUserIdResponseDto>> GetAllRoomsByUser(RoomsUsersGetByUserIdRequestDto request) 
         {
-            var roomusers = await _context.RoomsUsers.Where(r => r.UserId == request.UserId).ToListAsync();
+            var roomUsers = await _context.RoomsUsers.Where(r => r.UserId == request.UserId).ToListAsync();
             var rooms = new List<RoomsUsersGetByUserIdResponseDto>();
-            foreach (var roomuser in roomusers)
+            foreach (var roomUser in roomUsers)
             {
-                var room = await _context.Rooms.Where(u => u.Id == roomuser.RoomId).FirstOrDefaultAsync();
+                var room = await _context.Rooms.Where(u => u.Id == roomUser.RoomId).FirstOrDefaultAsync();
                 var responseRoom = new RoomsUsersGetByUserIdResponseDto { RoomId = room.Id, RoomName = room.Name };
                 rooms.Add(responseRoom);
             }
@@ -66,7 +66,7 @@ namespace MusicDrone.Business.Services
             if (roomuser != null)
             {
                 response.Exists = true;
-                if (roomuser.Role == Roles.ADMINISTRATORS)
+                if (roomuser.Role == RoomUserRole.Owner)
                 {
                     response.isAdministrator = true;
                     return response;

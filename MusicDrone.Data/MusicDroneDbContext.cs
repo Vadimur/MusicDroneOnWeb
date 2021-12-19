@@ -10,7 +10,7 @@ namespace MusicDrone.Data
     public class MusicDroneDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public DbSet<Room> Rooms { get; set; }
-        public DbSet<RoomsUsers> RoomsUsers { get; set; }
+        public DbSet<RoomUser> RoomsUsers { get; set; }
 
         public MusicDroneDbContext(DbContextOptions<MusicDroneDbContext> options)
             : base(options)
@@ -57,6 +57,10 @@ namespace MusicDrone.Data
                     UserId = adminId
                 }
             );
+            
+            modelBuilder.Entity<RoomUser>()
+                .Property(roomUser => roomUser.Role)
+                .HasConversion<int>();
         }
     }
 }
