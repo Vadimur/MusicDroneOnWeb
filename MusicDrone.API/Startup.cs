@@ -99,7 +99,7 @@ namespace MusicDrone.API
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
@@ -110,10 +110,10 @@ namespace MusicDrone.API
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Id = JwtBearerDefaults.AuthenticationScheme
                             },
                             Scheme = "oauth2",
-                            Name = "Bearer",
+                            Name = JwtBearerDefaults.AuthenticationScheme,
                             In = ParameterLocation.Header
                         },
                         new List<string>()

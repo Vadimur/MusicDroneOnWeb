@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.API", "MusicDrone.API\MusicDrone.API.csproj", "{EBD11F74-D3E7-4283-8DC3-82BC380E3D12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicDrone.API", "MusicDrone.API\MusicDrone.API.csproj", "{EBD11F74-D3E7-4283-8DC3-82BC380E3D12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.Business", "MusicDrone.Business\MusicDrone.Business.csproj", "{D13F03CD-282C-42BC-940B-0F150FFA0772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicDrone.Business", "MusicDrone.Business\MusicDrone.Business.csproj", "{D13F03CD-282C-42BC-940B-0F150FFA0772}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.Data", "MusicDrone.Data\MusicDrone.Data.csproj", "{C53AB64C-DA9E-4667-9C15-BEB477EBD375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicDrone.Data", "MusicDrone.Data\MusicDrone.Data.csproj", "{C53AB64C-DA9E-4667-9C15-BEB477EBD375}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.IntegrationTests", "MusicDrone.IntegrationTests\MusicDrone.IntegrationTests.csproj", "{6419DED0-148D-41CD-B68F-AFBA1FAC199F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C53AB64C-DA9E-4667-9C15-BEB477EBD375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
