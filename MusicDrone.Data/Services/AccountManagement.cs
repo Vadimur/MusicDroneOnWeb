@@ -64,6 +64,11 @@ namespace MusicDrone.Data.Services
         public async Task<BaseResponse<ProfileDto>> RetrieveProfile(ClaimsPrincipal userClaims)
         {
             var user = await _userManager.GetUserAsync(userClaims);
+            if (user == null)
+            {
+                return BaseResponse<ProfileDto>.Fail("User doesn't exist");
+            }
+
             var profile = new ProfileDto
             {
                 FirstName = user.FirstName,
