@@ -39,19 +39,6 @@ namespace MusicDrone.IntegrationTests.Tests
             var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
             _scope = scopeFactory.CreateScope();
             _context = _scope.ServiceProvider.GetRequiredService<MusicDroneDbContext>();
-            //var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            //var scope = scopeFactory.CreateScope();
-            //_context = scope.ServiceProvider.GetService<MusicDroneDbContext>();
-
-            //var x = _context.Database.EnsureCreated();
-            //var t = 1;
-            /*var sp = services.BuildServiceProvider();
-
-            using var scope = sp.CreateScope();
-            var scopedServices = scope.ServiceProvider;
-            var context = scopedServices.GetRequiredService<MusicDroneDbContext>();
-
-            context.Database.EnsureCreated(); */
         }
 
         public void Dispose()
@@ -77,7 +64,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var usersCount = _context.Users.Count();
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Register, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Register, request);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -85,7 +72,30 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Fact]
-        public async Task Register_ValidRequest_UserRegistered()
+        public async Task Register_ValidRequest_RegisteredAndResponseIsValid()
+        {
+            //Arrange
+            var request = new RegisterRequest
+            {
+                Name = "Tribbiani",
+                Surname = "Mancini",
+                Email = "TribbianiMancini@gmail.com",
+                Password = "Tribbian1Mancini_@"
+            };
+
+            //Act
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Register, request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            responseContent.Should().NotBeNull();
+            var responseObject = JsonConvert.DeserializeObject<RegisterResponse>(responseContent);
+            responseObject.Role.Should().BeEquivalentTo(Roles.USERS);
+        }
+
+        [Fact]
+        public async Task Register_ValidRequest_RegisteredAndAddedToDatabase()
         {
             //Arrange
             var request = new RegisterRequest
@@ -96,17 +106,21 @@ namespace MusicDrone.IntegrationTests.Tests
                 Password = "Tribbian1Mancini_@"
             };
             var usersCount = _context.Users.Count();
+            var usersRoleId = _context.Roles.Single(r => r.Name == Roles.USERS).Id;
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Register, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Register, request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            responseContent.Should().NotBeNull();
-            var result = JsonConvert.DeserializeObject<RegisterResponse>(responseContent);
-            result.Role.Should().BeEquivalentTo(Roles.USERS);
             _context.Users.Count().Should().Be(usersCount + 1);
+            var registeredUsers = _context.Users.Where(u => u.Email == request.Email).ToList();
+            registeredUsers.Count.Should().Be(1);
+
+            var registeredUser = registeredUsers.Single();
+            var userRoles = _context.UserRoles.Where(p => p.UserId.Equals(registeredUser.Id)).ToList();
+            userRoles.Count.Should().Be(1);
+            userRoles.Single().RoleId.Should().Be(usersRoleId);
         }
 
         [Fact]
@@ -119,6 +133,7 @@ namespace MusicDrone.IntegrationTests.Tests
 
             var existingUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
             await SaveUserAsync(existingUser);
+            var usersCount = _context.Users.Count();
 
             var request = new RegisterRequest
             {
@@ -129,14 +144,15 @@ namespace MusicDrone.IntegrationTests.Tests
             };
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Register, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Register, request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
             responseContent.Should().NotBeNull();
             responseContent.Should().ContainEquivalentOf($"Username '{username}' is already taken.");
-            _context.Users.Find(userId).Should().NotBeNull();
+
+            _context.Users.Count().Should().Be(usersCount);
         }
 
         [Theory]
@@ -148,7 +164,7 @@ namespace MusicDrone.IntegrationTests.Tests
         [InlineData("QWerty1", "Passwords must have at least one non alphanumeric character.")]
         [InlineData("QWerty_", "Passwords must have at least one digit ('0'-'9').")]
         [InlineData("QWERTY1_", "Passwords must have at least one lowercase ('a'-'z').")]
-        public async Task Register_InvalidPassword_ErrorMessageReturned(string invalidPassword, string errorMessage)
+        public async Task Register_InvalidPasswordFormat_ErrorMessageReturned(string invalidPassword, string errorMessage)
         {
             //Arrange
             var request = new RegisterRequest
@@ -161,13 +177,14 @@ namespace MusicDrone.IntegrationTests.Tests
             var usersCount = _context.Users.Count();
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Register, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Register, request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
             responseContent.Should().NotBeNull();
             responseContent.Should().BeEquivalentTo(errorMessage);
+
             _context.Users.Count().Should().Be(usersCount);
         }
 
@@ -179,10 +196,11 @@ namespace MusicDrone.IntegrationTests.Tests
             var usersCount = _context.Users.Count();
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Login, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Login, request);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
             _context.Users.Count().Should().Be(usersCount);
         }
 
@@ -197,7 +215,7 @@ namespace MusicDrone.IntegrationTests.Tests
             };
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Login, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Login, request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
@@ -207,7 +225,7 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Fact]
-        public async Task Login_ValidRequest_UserSuccessfulLogin()
+        public async Task Login_ValidRequest_UserSuccessfullyLoginedAndReponseIsValid()
         {
             //Arrange
             var userId = new Guid("134f56ee-89ec-4037-a485-c80bd79b9679");
@@ -224,7 +242,7 @@ namespace MusicDrone.IntegrationTests.Tests
             };
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.Login, request);
+            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Login, request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
@@ -232,6 +250,29 @@ namespace MusicDrone.IntegrationTests.Tests
             responseContent.Should().NotBeNull();
             var responseData = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
             responseData.Token.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public async Task Login_ValidRequest_UserSuccessfullyLoginedAndSavedToDatabase()
+        {
+            //Arrange
+            var userId = new Guid("134f56ee-89ec-4037-a485-c80bd79b9679");
+            var username = "TestUser";
+            var password = TestConstants.DefaultTestPassword;
+
+            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
+            await SaveUserAsync(user);
+
+            var request = new LoginRequest
+            {
+                Login = username,
+                Password = password
+            };
+
+            //Act
+            await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Login, request);
+
+            //Assert
             _context.Users.Find(userId).Should().NotBeNull();
             _context.Users.Count().Should().Be(2);
         }
@@ -247,8 +288,7 @@ namespace MusicDrone.IntegrationTests.Tests
             await SaveUserAsync(user);
 
             //Act
-            var response = await _client.SendTestRequest(HttpMethod.Get, ApiEndpoints.Profile);
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var response = await _client.SendTestRequest(HttpMethod.Get, ApiEndpoints.AccountEndpoints.Profile);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -256,7 +296,7 @@ namespace MusicDrone.IntegrationTests.Tests
 
         [Theory]
         [MemberData(nameof(AccountTestDataGenerator.UsersWithAuthorizationRoles), MemberType = typeof(AccountTestDataGenerator))]
-        public async Task Profile_AuthorizedRequestUsersRole_UsersProfile(Guid userId, string username, string role)
+        public async Task Profile_AuthorizedRequestUserExists_UsersProfileWasReturned(Guid userId, string username, string role)
         {
             //Arrange
             var password = TestConstants.DefaultTestPassword;
@@ -267,7 +307,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var client = _factory.CreateClientWithTestAuth(userProvider);
 
             //Act
-            var response = await client.SendTestRequest(HttpMethod.Get, ApiEndpoints.Profile);
+            var response = await client.SendTestRequest(HttpMethod.Get, ApiEndpoints.AccountEndpoints.Profile);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
@@ -276,6 +316,24 @@ namespace MusicDrone.IntegrationTests.Tests
             var responseData = JsonConvert.DeserializeObject<ProfileResponse>(responseContent);
             responseData.FirstName.Should().BeEquivalentTo(user.FirstName);
             responseData.LastName.Should().BeEquivalentTo(user.LastName);
+        }
+
+        [Theory]
+        [MemberData(nameof(AccountTestDataGenerator.UsersWithAuthorizationRoles), MemberType = typeof(AccountTestDataGenerator))]
+        public async Task Profile_AuthorizedRequestUserDoesntExist_NotFoundResponse(Guid userId, string username, string role)
+        {
+            //Arrange
+            var password = TestConstants.DefaultTestPassword;
+            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
+
+            var userProvider = TestClaimsProvider.FromApplicationUser(user, role);
+            var client = _factory.CreateClientWithTestAuth(userProvider);
+
+            //Act
+            var response = await client.SendTestRequest(HttpMethod.Get, ApiEndpoints.AccountEndpoints.Profile);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
