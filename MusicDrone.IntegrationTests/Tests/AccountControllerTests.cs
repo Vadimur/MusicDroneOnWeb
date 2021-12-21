@@ -28,9 +28,9 @@ namespace MusicDrone.IntegrationTests.Tests
         private readonly MusicDroneDbContext _context;
         private readonly IServiceScope _scope;
 
-        public AccountControllerTests(CustomWebApplicationFactory<API.Startup> factory)
+        public AccountControllerTests()
         {
-            _factory = factory;
+            _factory = new CustomWebApplicationFactory<API.Startup>();
             _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
             {
                 AllowAutoRedirect = false
@@ -39,7 +39,6 @@ namespace MusicDrone.IntegrationTests.Tests
             var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
             _scope = scopeFactory.CreateScope();
             _context = _scope.ServiceProvider.GetRequiredService<MusicDroneDbContext>();
-
             //var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
             //var scope = scopeFactory.CreateScope();
             //_context = scope.ServiceProvider.GetService<MusicDroneDbContext>();
@@ -57,8 +56,11 @@ namespace MusicDrone.IntegrationTests.Tests
 
         public void Dispose()
         {
-            _client?.Dispose();
+            _context.Database.EnsureDeleted();
+            _context?.Dispose();
             _scope?.Dispose();
+            _factory?.Dispose();
+            _client?.Dispose();
         }
 
         private async Task SaveUserAsync(ApplicationUser user)
@@ -231,6 +233,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var responseData = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
             responseData.Token.Should().NotBeNullOrWhiteSpace();
             _context.Users.Find(userId).Should().NotBeNull();
+            _context.Users.Count().Should().Be(2);
         }
 
         [Fact]
