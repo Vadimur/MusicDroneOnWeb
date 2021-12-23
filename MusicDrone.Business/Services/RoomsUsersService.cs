@@ -37,6 +37,8 @@ namespace MusicDrone.Business.Services
         }
         public async Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request)
         {
+            var roomExists = await _context.Rooms.Where(r => r.Id == request.RoomId).FirstOrDefaultAsync();
+            if (roomExists == null) { return null; }
             var usersInRoom = await
                 (
                 from roomsUsers in _context.RoomsUsers
@@ -48,11 +50,12 @@ namespace MusicDrone.Business.Services
                     LastName = users.LastName
                 }
                 ).ToListAsync();
-            if (usersInRoom.Count == 0) { return null; }
             return usersInRoom;
         }
-        public async Task<IEnumerable<RoomsUsersGetByUserIdResponseDto>> GetAllRoomsByUser(RoomsUsersGetByUserIdRequestDto request) 
+        public async Task<IEnumerable<RoomsUsersGetByUserIdResponseDto>> GetAllRoomsByUser(RoomsUsersGetByUserIdRequestDto request)
         {
+            var userExists = await _context.Users.Where(r => r.Id == request.UserId).FirstOrDefaultAsync();
+            if (userExists == null) { return null; }
             var roomsOfUser = await
                 (
                 from roomsUsers in _context.RoomsUsers
@@ -64,7 +67,6 @@ namespace MusicDrone.Business.Services
                     RoomName = rooms.Name
                 }
                 ).ToListAsync();
-            if (roomsOfUser.Count == 0) { return null; }
             return roomsOfUser;
         }
         public async Task<RoomsUsersDeleteByUserIdResponseDto> DeleteByUserIdAsync(RoomsUsersDeleteRequestDto request)
