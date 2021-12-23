@@ -206,6 +206,22 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Fact]
+        public async Task GetRoom_InvalidRoomId_NotFoundResponse()
+        {
+            //Arrange
+            var invalidRoomId = "xx_notvalidid_xx";
+
+            var client = _factory.CreateClientWithTestAuth(TestClaimsProvider.WithUserClaims());
+            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(invalidRoomId);
+
+            //Act
+            var response = await client.SendTestRequest(HttpMethod.Get, apiEndpoint);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
         public async Task DeleteRoom_ExistingRoom_ResponseIsValid()
         {
             //Arrange
@@ -284,11 +300,71 @@ namespace MusicDrone.IntegrationTests.Tests
             var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(request.Id);
 
             //Act
-            var response = await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
+            await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
 
             //Assert
             _context.Rooms.Count().Should().Be(roomsCount - 1);
             _context.RoomsUsers.Count(r => r.Id == roomId).Should().Be(0);
+            _context.Users.Count().Should().Be(usersCount);
+        }
+
+        [Fact]
+        public async Task DeleteRoom_InvalidRoomId_ResponseIsValid()
+        {
+            //Arrange
+            var userId = new Guid("4e584416-fdd1-4c92-a90e-eb808c8b0166");
+            var username = "TestDeleteRoomUsername";
+            var password = TestConstants.DefaultTestPassword;
+            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
+            await SaveEntity(user);
+
+            var invalidRoomId = "xx_notvalidid_xx";
+
+            var request = new RoomDeleteRequestModel
+            {
+                Id = invalidRoomId
+            };
+
+            var client = _factory.CreateClientWithTestAuth(user);
+            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(request.Id);
+
+            //Act
+            var response = await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task DeleteRoom_InvalidRoomId_DatabaseRemainsTheSame()
+        {
+            //Arrange
+            var userId = new Guid("0eed43e3-48b2-428a-8cef-5dbf68701c4a");
+            var username = "TestDeleteRoomUsername";
+            var password = TestConstants.DefaultTestPassword;
+            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
+            await SaveEntity(user);
+
+            var invalidRoomId = "xx_notvalidid_xx";
+
+            var roomsCount = _context.Rooms.Count();
+            var usersCount = _context.Users.Count();
+            var roomUsersCount = _context.RoomsUsers.Count();
+
+            var request = new RoomDeleteRequestModel
+            {
+                Id = invalidRoomId
+            };
+
+            var client = _factory.CreateClientWithTestAuth(user);
+            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(request.Id);
+
+            //Act
+            await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
+
+            //Assert
+            _context.Rooms.Count().Should().Be(roomsCount);
+            _context.RoomsUsers.Count().Should().Be(roomUsersCount);
             _context.Users.Count().Should().Be(usersCount);
         }
 
