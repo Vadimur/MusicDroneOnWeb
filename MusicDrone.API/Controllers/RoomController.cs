@@ -29,8 +29,12 @@ namespace MusicDrone.API.Controllers
         [HttpPost]
         public async Task<ActionResult<RoomCreateRequestModel>> CreateRoom([FromBody]RoomCreateRequestModel request) 
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var serviceRequest = new RoomCreateRequestDto { Name = request.Name, UserId = new Guid(userId) };
+            bool isValid = Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userGuid);
+            if (!isValid)
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomCreateRequestDto { Name = request.Name, UserId = userGuid };
             var serviceResponse = await _roomService.CreateAsync(serviceRequest);
             return CreatedAtAction("GetConcreteRoom", new { id = serviceResponse.Id }, request);
         }
@@ -44,9 +48,14 @@ namespace MusicDrone.API.Controllers
         [ActionName("GetConcreteRoom")]
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<RoomResponseModel>> GetConcreteRoom(string id) 
+        public async Task<ActionResult<RoomResponseModel>> GetConcreteRoom(string id)
         {
-            var serviceRequest = new RoomGetByIdRequestDto { Id = new Guid(id) };
+            bool isRoomValid = Guid.TryParse(id, out Guid roomGuid);
+            if (!isRoomValid)
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomGetByIdRequestDto { Id = roomGuid };
             var serviceResponse = await _roomService.GetById(serviceRequest);
             if (serviceResponse == null) 
             {
@@ -56,9 +65,15 @@ namespace MusicDrone.API.Controllers
             return Ok(room);
         }
         [HttpDelete]
-        public async Task<ActionResult> DeleteRoom([FromBody]RoomDeleteRequestModel request) 
+        public async Task<ActionResult> DeleteRoom([FromBody]RoomDeleteRequestModel request)
         {
-            var serviceRequest = new RoomDeleteRequestDto { Id = new Guid(request.Id), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
+            bool isUserValid = Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userGuid);
+            bool isRoomValid = Guid.TryParse(request.Id, out Guid roomGuid);
+            if (!isUserValid || !isRoomValid)
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomDeleteRequestDto { Id = roomGuid, UserId = userGuid};
             var serviceResponse = await _roomService.DeleteByIdAsync(serviceRequest);
             if (serviceResponse.Exists == false) 
             {

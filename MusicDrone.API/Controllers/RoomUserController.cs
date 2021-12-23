@@ -8,6 +8,8 @@ using MusicDrone.API.Models.Requests;
 using MusicDrone.API.Models.Responses;
 using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
+using MusicDrone.Business.Models.Responses;
+using AutoMapper;
 
 namespace MusicDrone.API.Controllers
 {
@@ -17,14 +19,22 @@ namespace MusicDrone.API.Controllers
     public class RoomUserController : ControllerBase
     {
         private readonly IRoomsUsersService _roomsUsersService;
-        public RoomUserController(IRoomsUsersService roomsUsersService)
+        private readonly IMapper _mapper;
+        public RoomUserController(IRoomsUsersService roomsUsersService, IMapper mapper)
         {
             _roomsUsersService = roomsUsersService;
+            _mapper = mapper;
         }
         [HttpPost]
-        public async Task<ActionResult> EnterRoom([FromBody]RoomsUsersCreateRequestModel request)
+        public async Task<ActionResult> EnterRoom([FromBody] RoomsUsersCreateRequestModel request)
         {
-            var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = new Guid(request.RoomId), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
+            bool isUserValid = Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userGuid);
+            bool isRoomValid = Guid.TryParse(request.RoomId, out Guid roomGuid);
+            if (!isUserValid || !isRoomValid)
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = roomGuid, UserId = userGuid };
             var serviceResponse = await _roomsUsersService.CreateAsync(serviceRequest);
             if (serviceResponse.Exists != false)
             {
@@ -34,23 +44,49 @@ namespace MusicDrone.API.Controllers
         }
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<RoomsUsersGetByRoomIdResponseModel>>> GetAllUsersInRoom(string id) 
+        public async Task<ActionResult<IEnumerable<RoomsUsersGetByRoomIdResponseModel>>> GetAllUsersInRoom(string id)
         {
-            var serviceRequest = new RoomsUsersGetByRoomIdRequestDto { RoomId = new Guid(id) };
-            var users = await _roomsUsersService.GetAllInRoom(serviceRequest);
+            bool isRoomValid = Guid.TryParse(id, out Guid roomGuid);
+            if (!isRoomValid)
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomsUsersGetByRoomIdRequestDto { RoomId = roomGuid };
+            var serviceResponse = await _roomsUsersService.GetAllInRoom(serviceRequest);
+            if (serviceResponse == null)
+            {
+                return NotFound();
+            }
+            var users = _mapper.Map<IEnumerable<RoomsUsersGetByRoomIdResponseDto>, IEnumerable<RoomsUsersGetByRoomIdResponseModel>>(serviceResponse);
             return Ok(users);
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoomsUsersGetByUserIdResponseModel>>> GetAllRoomsByUser()
         {
-            var serviceRequest = new RoomsUsersGetByUserIdRequestDto { UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)) };
-            var rooms = await _roomsUsersService.GetAllRoomsByUser(serviceRequest);
+            bool isValid = Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userGuid);
+            if (!isValid)
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomsUsersGetByUserIdRequestDto { UserId = userGuid };
+            var serviceResponse = await _roomsUsersService.GetAllRoomsByUser(serviceRequest);
+            if (serviceResponse == null)
+            {
+                return NotFound();
+            }
+            var rooms = _mapper.Map<IEnumerable<RoomsUsersGetByUserIdResponseDto>, IEnumerable<RoomsUsersGetByUserIdResponseModel>>(serviceResponse);
             return Ok(rooms);
         }
         [HttpDelete]
-        public async Task<ActionResult> ExitTheRoom([FromBody] RoomsUsersDeleteRequestModel request) 
+        public async Task<ActionResult> ExitTheRoom([FromBody] RoomsUsersDeleteRequestModel request)
         {
-            var serviceRequest = new RoomsUsersDeleteRequestDto { RoomId = new Guid(request.RoomId), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
+            bool isUserValid = Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userGuid);
+            bool isRoomValid = Guid.TryParse(request.RoomId, out Guid roomGuid);
+            if (!isUserValid || !isRoomValid) 
+            {
+                return NotFound();
+            }
+            var serviceRequest = new RoomsUsersDeleteRequestDto { RoomId = roomGuid, UserId = userGuid };
             var serviceResponse = await _roomsUsersService.DeleteByUserIdAsync(serviceRequest);
             if (serviceResponse.Exists == false)
             {
