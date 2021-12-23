@@ -26,7 +26,8 @@ namespace MusicDrone.API.Controllers
             _roomService = roomService;
             _mapper = mapper;
         }
-        [HttpPost]
+
+        [HttpPost("create")]
         public async Task<ActionResult<RoomCreateRequestModel>> CreateRoom([FromBody]RoomCreateRequestModel request) 
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -34,7 +35,7 @@ namespace MusicDrone.API.Controllers
             var serviceResponse = await _roomService.CreateAsync(serviceRequest);
             return CreatedAtAction("GetConcreteRoom", new { id = serviceResponse.Id }, request);
         }
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<RoomResponseModel>>> GetAllRooms() 
         {
             var serviceResponse = await _roomService.GetAll();
@@ -55,10 +56,10 @@ namespace MusicDrone.API.Controllers
             var room = new RoomResponseModel { Id = serviceResponse.Id.ToString(), Name = serviceResponse.Name };
             return Ok(room);
         }
-        [HttpDelete]
-        public async Task<ActionResult> DeleteRoom([FromBody]RoomDeleteRequestModel request) 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteRoom(string id) 
         {
-            var serviceRequest = new RoomDeleteRequestDto { Id = new Guid(request.Id), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
+            var serviceRequest = new RoomDeleteRequestDto { Id = new Guid(id), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
             var serviceResponse = await _roomService.DeleteByIdAsync(serviceRequest);
             if (serviceResponse.Exists == false) 
             {

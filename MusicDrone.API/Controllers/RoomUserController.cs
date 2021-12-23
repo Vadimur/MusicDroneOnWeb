@@ -21,12 +21,12 @@ namespace MusicDrone.API.Controllers
         {
             _roomsUsersService = roomsUsersService;
         }
-        [HttpPost]
+        [HttpPost("enter")]
         public async Task<ActionResult> EnterRoom([FromBody]RoomsUsersCreateRequestModel request)
         {
             var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = new Guid(request.RoomId), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
             var serviceResponse = await _roomsUsersService.CreateAsync(serviceRequest);
-            if (serviceResponse.Exists != false)
+            if (serviceResponse.Exists)
             {
                 return Conflict();
             }
@@ -40,14 +40,14 @@ namespace MusicDrone.API.Controllers
             var users = await _roomsUsersService.GetAllInRoom(serviceRequest);
             return Ok(users);
         }
-        [HttpGet]
+        [HttpGet("rooms")]
         public async Task<ActionResult<IEnumerable<RoomsUsersGetByUserIdResponseModel>>> GetAllRoomsByUser()
         {
             var serviceRequest = new RoomsUsersGetByUserIdRequestDto { UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)) };
             var rooms = await _roomsUsersService.GetAllRoomsByUser(serviceRequest);
             return Ok(rooms);
         }
-        [HttpDelete]
+        [HttpDelete("exit")]
         public async Task<ActionResult> ExitTheRoom([FromBody] RoomsUsersDeleteRequestModel request) 
         {
             var serviceRequest = new RoomsUsersDeleteRequestDto { RoomId = new Guid(request.RoomId), UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier))};
