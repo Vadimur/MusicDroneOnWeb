@@ -15,6 +15,8 @@ namespace MusicDrone.API
             CreateMap<RegisterRequest, RegisterDto>();
             CreateMap<ProfileDto, ProfileResponse>();
             CreateMap<RoomResponseDto, RoomResponseModel>();
+            CreateMap<RoomsUsersGetByUserIdResponseDto, RoomsUsersGetByUserIdResponseModel>();
+            CreateMap<RoomsUsersGetByRoomIdResponseDto, RoomsUsersGetByRoomIdResponseModel>();
         }
     }
 }

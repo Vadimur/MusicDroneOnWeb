@@ -387,7 +387,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var responseData = JsonConvert.DeserializeObject<List<RoomsUsersGetByUserIdResponseModel>>(responseContent);
             responseData.Count().Should().Be(userRoomsCount);
             responseData.Select(r => r.RoomName).SequenceEqual(rooms.Select(r => r.Name)).Should().BeTrue();
-            responseData.Select(r => r.RoomId).SequenceEqual(rooms.Select(r => r.Id)).Should().BeTrue();
+            responseData.Select(r => r.RoomId).SequenceEqual(rooms.Select(r => r.Id.ToString())).Should().BeTrue();
         }
 
         [Theory]
