@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using MusicDrone.API.Models.Requests;
+﻿using MusicDrone.API.Models.Requests;
 using System.Net;
 using System.Net.Http;
 using MusicDrone.IntegrationTests.Helpers;
@@ -12,48 +11,16 @@ using MusicDrone.API.Models.Responses;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
-using MusicDrone.Data;
-using Microsoft.Extensions.DependencyInjection;
-using MusicDrone.IntegrationTests.Tests.Custom;
 using MusicDrone.IntegrationTests.Tests.Custom.Authentication;
-using MusicDrone.IntegrationTests.Tests.Custom.Authentication.Extensions;
-using MusicDrone.Data.Models;
 
 namespace MusicDrone.IntegrationTests.Tests
 {
-    public class AccountControllerTests : IClassFixture<CustomWebApplicationFactory<API.Startup>>, IDisposable
+    public class AccountControllerTests : BaseControllerTests
     {
-        private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory<API.Startup> _factory;
-        private readonly MusicDroneDbContext _context;
-        private readonly IServiceScope _scope;
 
-        public AccountControllerTests()
+        public AccountControllerTests() : base(nameof(AccountControllerTests)) 
         {
-            _factory = new CustomWebApplicationFactory<API.Startup>();
-            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = false
-            });
 
-            var scopeFactory = _factory.Services.GetService<IServiceScopeFactory>();
-            _scope = scopeFactory.CreateScope();
-            _context = _scope.ServiceProvider.GetRequiredService<MusicDroneDbContext>();
-        }
-
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-            _context?.Dispose();
-            _scope?.Dispose();
-            _factory?.Dispose();
-            _client?.Dispose();
-        }
-
-        private async Task SaveUserAsync(ApplicationUser user)
-        {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
         }
 
         [Theory]
@@ -132,7 +99,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var password = TestConstants.DefaultTestPassword;
 
             var existingUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveUserAsync(existingUser);
+            await SaveEntity(existingUser);
             var usersCount = _context.Users.Count();
 
             var request = new RegisterRequest
@@ -233,7 +200,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var password = TestConstants.DefaultTestPassword;
 
             var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveUserAsync(user);
+            await SaveEntity(user);
 
             var request = new LoginRequest
             {
@@ -261,7 +228,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var password = TestConstants.DefaultTestPassword;
 
             var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveUserAsync(user);
+            await SaveEntity(user);
 
             var request = new LoginRequest
             {
@@ -285,7 +252,7 @@ namespace MusicDrone.IntegrationTests.Tests
             var username = "UnathorizedProfileTestUser";
             var password = TestConstants.DefaultTestPassword;
             var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveUserAsync(user);
+            await SaveEntity(user);
 
             //Act
             var response = await _client.SendTestRequest(HttpMethod.Get, ApiEndpoints.AccountEndpoints.Profile);
@@ -301,7 +268,7 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var password = TestConstants.DefaultTestPassword;
             var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveUserAsync(user);
+            await SaveEntity(user);
 
             var userProvider = TestClaimsProvider.FromApplicationUser(user, role);
             var client = _factory.CreateClientWithTestAuth(userProvider);
