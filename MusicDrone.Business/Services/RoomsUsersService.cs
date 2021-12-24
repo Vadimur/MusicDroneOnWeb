@@ -36,7 +36,7 @@ namespace MusicDrone.Business.Services
         }
         public async Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request)
         {
-            var roomExists = await _context.Rooms.Where(r => r.Id == request.RoomId).FirstOrDefaultAsync();
+            var roomExists = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == request.RoomId);
             if (roomExists == null) { return null; }
             var usersInRoom = await
                 (
@@ -53,7 +53,7 @@ namespace MusicDrone.Business.Services
         }
         public async Task<IEnumerable<RoomsUsersGetByUserIdResponseDto>> GetAllRoomsByUser(RoomsUsersGetByUserIdRequestDto request)
         {
-            var userExists = await _context.Users.Where(r => r.Id == request.UserId).FirstOrDefaultAsync();
+            var userExists = await _context.Users.FirstOrDefaultAsync(r => r.Id == request.UserId);
             if (userExists == null) { return null; }
             var roomsOfUser = await
                 (

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,6 @@ using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
 using MusicDrone.Business.Models.Responses;
 using MusicDrone.Data;
-using MusicDrone.Data.Constants;
 using MusicDrone.Data.Models;
 
 namespace MusicDrone.Business.Services
@@ -66,7 +64,7 @@ namespace MusicDrone.Business.Services
             if (validate.Count() > 0)
             {
                 response.Exists = true;
-                var room = await _context.Rooms.Where(r => r.Id == request.Id).FirstOrDefaultAsync();
+                var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == request.Id);
                 var roomsusers = await _context.RoomsUsers.Where(r => r.RoomId == request.Id).ToListAsync();
                 _context.RoomsUsers.RemoveRange(roomsusers);
                 _context.Rooms.Remove(room);
