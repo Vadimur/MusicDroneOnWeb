@@ -182,7 +182,7 @@ namespace MusicDrone.IntegrationTests.Tests
             _context.RoomsUsers.Count(p => p.RoomId == roomId).Should().Be(preTestUsersInRoom);
         }
 
-        /*[Fact] // should be fixed
+        [Fact]
         public async Task EnterRoom_UnexistingRoom_NotFoundResponse()
         {
             //Arrange
@@ -208,7 +208,7 @@ namespace MusicDrone.IntegrationTests.Tests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact] // should be fixed
+        [Fact]
         public async Task EnterRoom_UnexistingRoom_DatabaseRemainsTheSame()
         {
             //Arrange
@@ -237,7 +237,7 @@ namespace MusicDrone.IntegrationTests.Tests
 
             _context.Rooms.Count().Should().Be(preTestRoomsCount);
             _context.RoomsUsers.Count().Should().Be(preTestRoomUsers);
-        }*/
+        }
 
         [Fact]
         public async Task EnterRoom_InvalidRequest_BadRequestResponse()
