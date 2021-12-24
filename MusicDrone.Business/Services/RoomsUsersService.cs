@@ -20,8 +20,13 @@ namespace MusicDrone.Business.Services
         public async Task<RoomsUsersCreateResponseDto> CreateAsync(RoomsUsersCreateRequestDto request)
         {
             var response = new RoomsUsersCreateResponseDto { Exists = false };
-            var validate = await _context.RoomsUsers.FirstOrDefaultAsync(r => r.RoomId == request.RoomId && r.UserId == request.UserId);
-            if (validate == null)
+            var roomExists = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == request.RoomId);
+            if (roomExists == null)
+            {
+                return null;
+            }
+            var roomUserExists = await _context.RoomsUsers.FirstOrDefaultAsync(r => r.RoomId == request.RoomId && r.UserId == request.UserId);
+            if (roomUserExists == null)
             {
                 var roomUser = new RoomUser { RoomId = request.RoomId, UserId = request.UserId, Role = RoomUserRole.User };
                 await _context.RoomsUsers.AddAsync(roomUser);
@@ -31,7 +36,7 @@ namespace MusicDrone.Business.Services
             else 
             {
                 response.Exists = true;
-                return response; 
+                return response;
             }
         }
         public async Task<IEnumerable<RoomsUsersGetByRoomIdResponseDto>> GetAllInRoom(RoomsUsersGetByRoomIdRequestDto request)

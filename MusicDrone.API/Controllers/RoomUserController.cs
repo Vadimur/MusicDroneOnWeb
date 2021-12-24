@@ -36,6 +36,10 @@ namespace MusicDrone.API.Controllers
             }
             var serviceRequest = new RoomsUsersCreateRequestDto { RoomId = roomGuid, UserId = userGuid };
             var serviceResponse = await _roomsUsersService.CreateAsync(serviceRequest);
+            if (serviceResponse == null) 
+            {
+                return NotFound();
+            }
             if (serviceResponse.Exists)
             {
                 return Conflict();
