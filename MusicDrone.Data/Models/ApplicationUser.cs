@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace MusicDrone.Data.Models
@@ -7,5 +8,6 @@ namespace MusicDrone.Data.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public virtual ICollection<RoomUser> RoomsUsers { get; set; }
     }
 }

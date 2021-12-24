@@ -65,8 +65,6 @@ namespace MusicDrone.Business.Services
             {
                 response.Exists = true;
                 var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == request.Id);
-                var roomsusers = await _context.RoomsUsers.Where(r => r.RoomId == request.Id).ToListAsync();
-                _context.RoomsUsers.RemoveRange(roomsusers);
                 _context.Rooms.Remove(room);
                 await _context.SaveChangesAsync();
                 return response;

@@ -15,12 +15,16 @@ namespace MusicDrone.Data
         public MusicDroneDbContext(DbContextOptions<MusicDroneDbContext> options)
             : base(options)
         {
-
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<RoomUser>().HasKey(e => new { e.RoomId, e.UserId });
+            modelBuilder.Entity<RoomUser>().HasOne(e => e.Room).WithMany(e => e.RoomsUsers).HasForeignKey(e => e.RoomId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<RoomUser>().HasOne(e => e.User).WithMany(e => e.RoomsUsers).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
 
             var adminRoleId = new Guid("bc963479-34f3-42b7-8d32-41bae9c47742");
             var adminId = new Guid("cdd4f090-d8aa-4c14-9cd5-fe3464ff3bbb");
