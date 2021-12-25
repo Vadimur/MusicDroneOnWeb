@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicDrone.Business", "Musi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicDrone.Data", "MusicDrone.Data\MusicDrone.Data.csproj", "{C53AB64C-DA9E-4667-9C15-BEB477EBD375}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.IntegrationTests", "MusicDrone.IntegrationTests\MusicDrone.IntegrationTests.csproj", "{6419DED0-148D-41CD-B68F-AFBA1FAC199F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicDrone.IntegrationTests", "MusicDrone.IntegrationTests\MusicDrone.IntegrationTests.csproj", "{6419DED0-148D-41CD-B68F-AFBA1FAC199F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicDrone.UnitTests", "MusicDrone.UnitTests\MusicDrone.UnitTests.csproj", "{31894891-D8C3-40BB-BFF5-5F02CD047964}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6419DED0-148D-41CD-B68F-AFBA1FAC199F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31894891-D8C3-40BB-BFF5-5F02CD047964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31894891-D8C3-40BB-BFF5-5F02CD047964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31894891-D8C3-40BB-BFF5-5F02CD047964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31894891-D8C3-40BB-BFF5-5F02CD047964}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

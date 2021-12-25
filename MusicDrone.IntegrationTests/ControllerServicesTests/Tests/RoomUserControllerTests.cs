@@ -2,9 +2,10 @@
 using MusicDrone.API.Models.Requests;
 using MusicDrone.API.Models.Responses;
 using MusicDrone.Data.Models;
-using MusicDrone.IntegrationTests.Helpers;
-using MusicDrone.IntegrationTests.Tests.Custom.Authentication;
-using MusicDrone.IntegrationTests.Tests.Data;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Custom.Authentication;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Data;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Helpers;
+using MusicDrone.IntegrationTests.Shared;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MusicDrone.IntegrationTests.Tests
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
 {
     public class RoomUserControllerTests : BaseControllerTests
     {
@@ -29,16 +30,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
             var username = "TestCreateRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var request = new RoomsUsersCreateRequestModel
@@ -61,16 +62,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
             var username = "TestCreateRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var preTestRoomsCount = _context.Rooms.Count();
@@ -98,16 +99,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
             var username = "TestCreateRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var roomUserPair = new RoomUser()
@@ -116,7 +117,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.Owner
             };
-            await SaveEntity(roomUserPair);
+            await _context.SaveEntity(roomUserPair);
 
             var preTestRoomsCount = _context.Rooms.Count();
             var preTestUsersInRoom = _context.RoomsUsers.Count(p => p.RoomId == roomId);
@@ -141,16 +142,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
             var username = "TestCreateRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var roomUserPair = new RoomUser()
@@ -159,7 +160,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.Owner
             };
-            await SaveEntity(roomUserPair);
+            await _context.SaveEntity(roomUserPair);
 
             var preTestRoomsCount = _context.Rooms.Count();
             var preTestUsersInRoom = _context.RoomsUsers.Count(p => p.RoomId == roomId);
@@ -188,9 +189,9 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
             var username = "TestCreateRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var randomRoomId = new Guid("2b95067e-434c-431a-b95e-df61b23a3811");
 
@@ -214,9 +215,9 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
             var username = "TestCreateRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var randomRoomId = new Guid("0c82b861-a4ef-4328-9cf2-d7270834e22b");
 
@@ -274,24 +275,24 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(AccountTestDataGenerator.UsersInRoom), MemberType = typeof(AccountTestDataGenerator))]
+        [MemberData(nameof(ControllersTestsDataGenerator.UsersInRoom), MemberType = typeof(ControllersTestsDataGenerator))]
         public async Task GetUsersInRoom_ExistingRoom_ReturnsEachUsersInfo(IEnumerable<ApplicationUser> usersInRoom)
         {
             //Arrange
             var userId = new Guid("2c2a3fa5-7918-43fe-9d56-c8782fa08761");
             var username = "TestGetUsersInRoomUser";
-            var password = TestConstants.DefaultTestPassword;
-            var authUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(authUser);
+            var password = SharedTestData.DefaultTestPassword;
+            var authUser = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(authUser);
 
-            Task.WaitAll(usersInRoom.Select(r => SaveEntity(r)).ToArray());
+            Task.WaitAll(usersInRoom.Select(r => _context.SaveEntity(r)).ToArray());
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
             var usersInRoomCount = usersInRoom.Count();
 
@@ -303,7 +304,7 @@ namespace MusicDrone.IntegrationTests.Tests
                     UserId = user.Id,
                     Role = RoomUserRole.Owner
                 };
-                await SaveEntity(roomUserPair);
+                await _context.SaveEntity(roomUserPair);
             }
 
             var client = _factory.CreateClientWithTestAuth(authUser);
@@ -323,24 +324,24 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(AccountTestDataGenerator.UsersInRoom), MemberType = typeof(AccountTestDataGenerator))]
+        [MemberData(nameof(ControllersTestsDataGenerator.UsersInRoom), MemberType = typeof(ControllersTestsDataGenerator))]
         public async Task GetUsersInRoom_ExistingRoom_DatabaseRemainsTheSame(IEnumerable<ApplicationUser> usersInRoom)
         {
             //Arrange
             var userId = new Guid("139a878f-98ff-488c-a910-67f6f59d4657");
             var username = "TestGetUsersInRoomUser";
-            var password = TestConstants.DefaultTestPassword;
-            var authUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(authUser);
+            var password = SharedTestData.DefaultTestPassword;
+            var authUser = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(authUser);
 
-            Task.WaitAll(usersInRoom.Select(r => SaveEntity(r)).ToArray());
+            Task.WaitAll(usersInRoom.Select(r => _context.SaveEntity(r)).ToArray());
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
             var usersInRoomCount = usersInRoom.Count();
 
@@ -352,7 +353,7 @@ namespace MusicDrone.IntegrationTests.Tests
                     UserId = user.Id,
                     Role = RoomUserRole.Owner
                 };
-                await SaveEntity(roomUserPair);
+                await _context.SaveEntity(roomUserPair);
             }
 
             var preTestUsersCount = _context.Users.Count();
@@ -378,9 +379,9 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("2c2a3fa5-7918-43fe-9d56-c8782fa08761");
             var username = "TestGetUsersInRoomUser";
-            var password = TestConstants.DefaultTestPassword;
-            var authUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(authUser);
+            var password = SharedTestData.DefaultTestPassword;
+            var authUser = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(authUser);
 
             var unexistingRoomId = new Guid("23bf5cfd-b25d-4e18-9983-527275906f1a");
 
@@ -400,9 +401,9 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("139a878f-98ff-488c-a910-67f6f59d4657");
             var username = "TestGetUsersInRoomUser";
-            var password = TestConstants.DefaultTestPassword;
-            var authUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(authUser);
+            var password = SharedTestData.DefaultTestPassword;
+            var authUser = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(authUser);
 
             var unexistingRoomId = new Guid("b85a7f67-9d06-44e3-aa64-9dc82cccd5a1");
 
@@ -424,12 +425,12 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(AccountTestDataGenerator.UserAndRooms), MemberType = typeof(AccountTestDataGenerator))]
+        [MemberData(nameof(ControllersTestsDataGenerator.UserAndRooms), MemberType = typeof(ControllersTestsDataGenerator))]
         public async Task GetRoomsByUser_ValidRequest_ReturnsUserRoomsInfo(ApplicationUser user, IEnumerable<Room> rooms)
         {
             //Arrange
-            await SaveEntity(user);
-            Task.WaitAll(rooms.Select(r => SaveEntity(r)).ToArray());
+            await _context.SaveEntity(user);
+            Task.WaitAll(rooms.Select(r => _context.SaveEntity(r)).ToArray());
 
             var userRoomsCount = rooms.Count();
 
@@ -442,7 +443,7 @@ namespace MusicDrone.IntegrationTests.Tests
                     Role = RoomUserRole.User
                 };
 
-                await SaveEntity(roomUserPair);
+                await _context.SaveEntity(roomUserPair);
             }
 
             var client = _factory.CreateClientWithTestAuth(user);
@@ -461,12 +462,12 @@ namespace MusicDrone.IntegrationTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(AccountTestDataGenerator.UserAndRooms), MemberType = typeof(AccountTestDataGenerator))]
+        [MemberData(nameof(ControllersTestsDataGenerator.UserAndRooms), MemberType = typeof(ControllersTestsDataGenerator))]
         public async Task GetRoomsByUser_ValidRequest_DatabaseRemainsTheSame(ApplicationUser user, IEnumerable<Room> rooms)
         {
             //Arrange
-            await SaveEntity(user);
-            Task.WaitAll(rooms.Select(r => SaveEntity(r)).ToArray());
+            await _context.SaveEntity(user);
+            Task.WaitAll(rooms.Select(r => _context.SaveEntity(r)).ToArray());
 
             var userRoomsCount = rooms.Count();
 
@@ -479,7 +480,7 @@ namespace MusicDrone.IntegrationTests.Tests
                     Role = RoomUserRole.User
                 };
 
-                await SaveEntity(roomUserPair);
+                await _context.SaveEntity(roomUserPair);
             }
 
             var preTestUsersCount = _context.Users.Count();
@@ -503,8 +504,8 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("165e63e9-0ba6-4390-8244-ca745f2061f5");
             var username = "TestGetUsersInRoomUser";
-            var password = TestConstants.DefaultTestPassword;
-            var authUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
+            var password = SharedTestData.DefaultTestPassword;
+            var authUser = SharedTestData.CreateTestUser(userId, username, password);
   
             var client = _factory.CreateClientWithTestAuth(authUser);
 
@@ -521,8 +522,8 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("165e63e9-0ba6-4390-8244-ca745f2061f5");
             var username = "TestGetUsersInRoomUser";
-            var password = TestConstants.DefaultTestPassword;
-            var authUser = AccountTestDataGenerator.CreateTestUser(userId, username, password);
+            var password = SharedTestData.DefaultTestPassword;
+            var authUser = SharedTestData.CreateTestUser(userId, username, password);
 
             var preTestUsersCount = _context.Users.Count();
             var preTestRoomsCount = _context.Rooms.Count();
@@ -545,16 +546,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("15f850c4-4d53-4725-8ae4-f8a0399157b9");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var userRoomPair = new RoomUser
@@ -563,7 +564,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.User
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var request = new RoomsUsersDeleteRequestModel
             {
@@ -585,16 +586,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("e0137077-f19a-4cbf-8470-a7341bef5782");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var userRoomPair = new RoomUser
@@ -603,7 +604,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.User
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var preTestUsersCount = _context.Users.Count();
             var preTestRoomsCount = _context.Rooms.Count();
@@ -631,16 +632,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("53196b7b-5696-4d13-817a-c6a87d6157b8");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var userRoomPair = new RoomUser
@@ -649,7 +650,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.Owner
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var request = new RoomsUsersDeleteRequestModel
             {
@@ -671,16 +672,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("53196b7b-5696-4d13-817a-c6a87d6157b8");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
 
             var userRoomPair = new RoomUser
@@ -689,7 +690,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.Owner
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var preTestUsersCount = _context.Users.Count();
             var preTestRoomsCount = _context.Rooms.Count();
@@ -717,23 +718,23 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("31c0470a-89d7-4604-a1d5-5cdbf0e04f9e");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var usersRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(usersRoom);
+            await _context.SaveEntity(usersRoom);
             var usersRoomId = usersRoom.Id;
 
             var anotherRoom = new Room()
             {
                 Name = "AnotherTestRoom"
             };
-            await SaveEntity(anotherRoom);
+            await _context.SaveEntity(anotherRoom);
 
             var notExistingRoomId = "18b25d12-9937-4f32-ac16-65de05822343";
 
@@ -743,7 +744,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.User
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var request = new RoomsUsersDeleteRequestModel
             {
@@ -765,16 +766,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("31c0470a-89d7-4604-a1d5-5cdbf0e04f9e");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
             var notExistingRoomId = "18b25d12-9937-4f32-ac16-65de05822343";
 
@@ -784,7 +785,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.User
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var preTestUsersCount = _context.Users.Count();
             var preTestRoomsCount = _context.Rooms.Count();
@@ -814,16 +815,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("fc46f932-cea3-4089-a1e0-f6f428ac0768");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
             var notExistingRoomId = "0b80deca-296d-4894-b55b-f44759aff2c6";
 
@@ -833,7 +834,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.User
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var request = new RoomsUsersDeleteRequestModel
             {
@@ -855,16 +856,16 @@ namespace MusicDrone.IntegrationTests.Tests
             //Arrange
             var userId = new Guid("1d4fb4d9-42ee-40fa-9127-710c746e6e87");
             var username = "TestExitRoomUsername";
-            var password = TestConstants.DefaultTestPassword;
-            var user = AccountTestDataGenerator.CreateTestUser(userId, username, password);
-            await SaveEntity(user);
+            var password = SharedTestData.DefaultTestPassword;
+            var user = SharedTestData.CreateTestUser(userId, username, password);
+            await _context.SaveEntity(user);
 
             var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
                 Name = roomName
             };
-            await SaveEntity(existingRoom);
+            await _context.SaveEntity(existingRoom);
             var roomId = existingRoom.Id;
             var notExistingRoomId = "f16babfb-0a91-4ac5-a508-30caecee0869";
 
@@ -874,7 +875,7 @@ namespace MusicDrone.IntegrationTests.Tests
                 UserId = userId,
                 Role = RoomUserRole.User
             };
-            await SaveEntity(userRoomPair);
+            await _context.SaveEntity(userRoomPair);
 
             var preTestUsersCount = _context.Users.Count();
             var preTestRoomsCount = _context.Rooms.Count();

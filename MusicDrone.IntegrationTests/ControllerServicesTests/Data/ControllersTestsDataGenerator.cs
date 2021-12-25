@@ -1,34 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
-using MusicDrone.API.Models.Requests;
+﻿using MusicDrone.API.Models.Requests;
 using MusicDrone.Data.Models;
 using MusicDrone.Data.Constants;
+using MusicDrone.IntegrationTests.Shared;
 using System;
 using System.Collections.Generic;
 
-namespace MusicDrone.IntegrationTests.Tests.Data
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Data
 {
-    public class AccountTestDataGenerator
+    public class ControllersTestsDataGenerator
     {
-        public static ApplicationUser CreateTestUser(Guid guid, string username, string password)
-        {
-            var userId = guid;
-            var hasher = new PasswordHasher<IdentityUser>();
-            var user = new ApplicationUser
-            {
-                Id = userId,
-                UserName = username,
-                NormalizedUserName = username.ToUpper(),
-                Email = username,
-                NormalizedEmail = username.ToUpper(),
-                FirstName = "FirstName",
-                LastName = "LastName",
-                PasswordHash = hasher.HashPassword(null, password),
-                SecurityStamp = userId.ToString()
-            };
-
-            return user;
-        }
-
         public static IEnumerable<object[]> UsersWithAuthorizationRoles()
         {
             yield return new object[] { new Guid("ff323ef5-acdc-4ea7-9317-47ffa8b34961"), $"{Roles.ADMINISTRATORS}_user", Roles.ADMINISTRATORS };
@@ -112,7 +92,7 @@ namespace MusicDrone.IntegrationTests.Tests.Data
         {
             yield return new object[]
             {
-                CreateTestUser(new Guid("8a20f128-046f-4817-bb1a-2dacfb1fb25c"), "TestUsername", TestConstants.DefaultTestPassword),
+                SharedTestData.CreateTestUser(new Guid("8a20f128-046f-4817-bb1a-2dacfb1fb25c"), "TestUsername", SharedTestData.DefaultTestPassword),
                 new List<Room>
                 {
                     new Room { Name = "TestRoom1" },
@@ -123,7 +103,7 @@ namespace MusicDrone.IntegrationTests.Tests.Data
 
             yield return new object[]
             {
-                CreateTestUser(new Guid("e6c27b39-9cae-45de-af42-b62ae6498160"), "TestUsername", TestConstants.DefaultTestPassword),
+                SharedTestData.CreateTestUser(new Guid("e6c27b39-9cae-45de-af42-b62ae6498160"), "TestUsername", SharedTestData.DefaultTestPassword),
                 new List<Room>
                 {
                     new Room { Name = "TestRoom1" }
@@ -132,21 +112,8 @@ namespace MusicDrone.IntegrationTests.Tests.Data
 
             yield return new object[]
             {
-                CreateTestUser(new Guid("fd8418aa-187b-4e38-afbc-4c90547529ab"), "TestUsername", TestConstants.DefaultTestPassword),
+                SharedTestData.CreateTestUser(new Guid("fd8418aa-187b-4e38-afbc-4c90547529ab"), "TestUsername", SharedTestData.DefaultTestPassword),
                 new List<Room> { }
-            };
-        }
-
-        public static IEnumerable<object[]> ExistingRooms()
-        {
-            yield return new object[] { new List<Room> { } };
-            yield return new object[] 
-            { 
-                new List<Room> 
-                { 
-                    new Room { Name = "TestRoom1" },
-                    new Room { Name = "TestRoom2" }
-                } 
             };
         }
     }

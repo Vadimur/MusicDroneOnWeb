@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MusicDrone.IntegrationTests.Tests.Data;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Data;
 
-namespace MusicDrone.IntegrationTests.Tests.Custom.Authentication
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Custom.Authentication
 {
     public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -21,9 +21,9 @@ namespace MusicDrone.IntegrationTests.Tests.Custom.Authentication
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var identity = new ClaimsIdentity(_claims, TestConstants.AuthenticationType);
+            var identity = new ClaimsIdentity(_claims, ControllerTestsConstants.AuthenticationType);
             var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, TestConstants.AuthenticationType);
+            var ticket = new AuthenticationTicket(principal, ControllerTestsConstants.AuthenticationType);
 
             var result = AuthenticateResult.Success(ticket);
 

@@ -8,14 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 using MusicDrone.Data;
 using MusicDrone.Data.Constants;
 using MusicDrone.Data.Models;
-using MusicDrone.IntegrationTests.Tests.Custom.Authentication;
-using MusicDrone.IntegrationTests.Tests.Data;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Custom.Authentication;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Data;
+using MusicDrone.IntegrationTests.Shared;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace MusicDrone.IntegrationTests.Tests.Custom
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Custom
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
@@ -54,14 +55,14 @@ namespace MusicDrone.IntegrationTests.Tests.Custom
                             AllowAutoRedirect = false
                         });
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestConstants.AuthenticationType);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(ControllerTestsConstants.AuthenticationType);
 
             return client;
         }
 
         public HttpClient CreateClientWithTestAuth(Guid guid, string username, string password, string role)
         {
-            var user = AccountTestDataGenerator.CreateTestUser(guid, username, password);
+            var user = SharedTestData.CreateTestUser(guid, username, password);
             var userProvider = TestClaimsProvider.FromApplicationUser(user, role);
 
             var client = CreateClientWithTestAuth(userProvider);
@@ -88,14 +89,14 @@ namespace MusicDrone.IntegrationTests.Tests.Custom
 
                     services.AddAuthentication(options =>
                     {
-                        options.DefaultAuthenticateScheme = TestConstants.AuthenticationType;
-                        options.DefaultScheme = TestConstants.AuthenticationType;
+                        options.DefaultAuthenticateScheme = ControllerTestsConstants.AuthenticationType;
+                        options.DefaultScheme = ControllerTestsConstants.AuthenticationType;
                     })
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestConstants.AuthenticationType, options => { });
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(ControllerTestsConstants.AuthenticationType, options => { });
 
                     services.AddAuthorization(options =>
                     {
-                        options.DefaultPolicy = new AuthorizationPolicyBuilder(TestConstants.AuthenticationType).RequireAuthenticatedUser().Build();
+                        options.DefaultPolicy = new AuthorizationPolicyBuilder(ControllerTestsConstants.AuthenticationType).RequireAuthenticatedUser().Build();
                     });
                 });
             });

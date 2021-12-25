@@ -4,7 +4,7 @@ using System.Security.Claims;
 using MusicDrone.Data.Constants;
 using MusicDrone.Data.Models;
 
-namespace MusicDrone.IntegrationTests.Tests.Custom.Authentication
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Custom.Authentication
 {
     public class TestClaimsProvider
     {
