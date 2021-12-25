@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicDrone.IntegrationTests.Helpers
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Helpers
 {
     public static class RequestSender
     {

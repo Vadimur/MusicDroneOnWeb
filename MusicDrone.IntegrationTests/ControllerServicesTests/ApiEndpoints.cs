@@ -1,4 +1,4 @@
-﻿namespace MusicDrone.IntegrationTests
+﻿namespace MusicDrone.IntegrationTests.ControllerServicesTests
 {
     public static class ApiEndpoints
     {

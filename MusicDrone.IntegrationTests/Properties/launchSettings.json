@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MusicDrone.IntegrationTests": {
+      "commandName": "Project"
+    }
+  },
+  "ConnectionStrings": {
+    "TestDatabase": "Data Source=localhost;Integrated Security=true;Initial Catalog=TestMusicDroneIdentityDb"
+  }
+}

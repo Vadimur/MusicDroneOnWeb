@@ -59,9 +59,9 @@ namespace MusicDrone.Business.Services
         }
         public async Task<RoomDeleteResponseDto> DeleteByIdAsync(RoomDeleteRequestDto request) 
         {
-            var validate = _context.RoomsUsers.Where(r => r.RoomId == request.Id && r.UserId == request.UserId && r.Role == RoomUserRole.Owner);
+            var validate = _context.RoomsUsers.Count(r => r.RoomId == request.Id && r.UserId == request.UserId && r.Role == RoomUserRole.Owner);
             var response = new RoomDeleteResponseDto { Exists = false };
-            if (validate.Count() > 0)
+            if (validate > 0)
             {
                 response.Exists = true;
                 var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == request.Id);

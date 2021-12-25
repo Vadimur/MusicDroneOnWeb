@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using MusicDrone.Data;
-using MusicDrone.IntegrationTests.Tests.Custom;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Custom;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace MusicDrone.IntegrationTests.Tests
+namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
 {
     public abstract class BaseControllerTests : IClassFixture<CustomWebApplicationFactory<API.Startup>>, IDisposable
     {
@@ -39,12 +38,6 @@ namespace MusicDrone.IntegrationTests.Tests
             _scope?.Dispose();
             _factory?.Dispose();
             _client?.Dispose();
-        }
-
-        protected async Task SaveEntity<T>(T entity) where T : class
-        {
-            await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }
