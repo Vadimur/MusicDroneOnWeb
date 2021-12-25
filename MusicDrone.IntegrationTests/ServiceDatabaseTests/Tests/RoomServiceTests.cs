@@ -12,7 +12,6 @@ using Xunit;
 
 namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
 {
-   // [CollectionDefinition("Non-Parallel Collection", DisableParallelization = true)]
     public class RoomServiceTests : TestsBase
     {
         private readonly RoomService _testRoomService;
@@ -29,19 +28,18 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
             var preTestUserRoomPairsCount = Context.RoomsUsers.Count();
 
             var testUser = SharedTestData.DefaultUser;
-            var testRoomName = "TestRoom123";
 
             var request = new RoomCreateRequestDto
             {
                 UserId = testUser.Id,
-                Name = testRoomName
+                Name = "TestRoom123"
             };
 
             //Act
             var response = await _testRoomService.CreateAsync(request);
 
             //Assert
-            response.Name.Should().BeEquivalentTo(testRoomName);
+            response.Name.Should().BeEquivalentTo(request.Name);
 
             // room is added
             Context.Rooms.Count().Should().Be(preTestRoomsCount + 1);
@@ -88,7 +86,8 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
         }*/
 
         [Theory]
-        [MemberData(nameof(SharedTestData.ExistingRooms), MemberType = typeof(SharedTestData))]
+        [MemberData(nameof(SharedTestData.RoomListsNotEmpty), MemberType = typeof(SharedTestData))]
+        [MemberData(nameof(SharedTestData.RoomsListEmpty), MemberType = typeof(SharedTestData))]
         public async Task GetAll_ValidRequest_AllRoomsReturned(List<Room> existingRooms)
         {
             //Arrange
@@ -142,22 +141,89 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
             response.Should().BeNull();
         }
 
-        [Fact]
-        public async Task DeleteRoom_ExistingRoom_RoomIsDeletedFromDatabase()
+        [Theory]
+        [MemberData(nameof(SharedTestData.UserListsNotEmpty), MemberType = typeof(SharedTestData))]
+        public async Task DeleteRoom_ExistingRoomDeletedByOwner_RoomAndUserRoomPairsAreDeleted(List<ApplicationUser> users)
         {
             //Arrange
-            var testUser = SharedTestData.DefaultUser;
+            await Context.SaveEntityRange(users);
+
             var existingRoom = new Room
             {
                 Name = "TestRoomName"
             };
             await Context.SaveEntity(existingRoom);
 
-            var roomUserPair = new RoomUser()
+            var owner = users.First();
+            users.RemoveAt(0);
+            var roomOwnerPair = new RoomUser
+            {
+                RoomId = existingRoom.Id,
+                UserId = owner.Id,
+                Role = RoomUserRole.Owner
+            };
+            await Context.SaveEntity(roomOwnerPair);
+
+            var roomUserPairs = users.Select(u => new RoomUser()
+            {
+                RoomId = existingRoom.Id,
+                UserId = u.Id,
+                Role = RoomUserRole.User
+            });
+            await Context.SaveEntityRange(roomUserPairs);
+
+            var request = new RoomDeleteRequestDto
+            {
+                Id = existingRoom.Id,
+                UserId = owner.Id
+            };
+
+            var preTestRoomsCount = Context.Rooms.Count();
+            var preTestUserRoomPairsCount = Context.RoomsUsers.Count();
+
+            //Act
+            var response = await _testRoomService.DeleteByIdAsync(request);
+
+            //Assert
+            response.Exists.Should().BeTrue();
+
+            Context.Rooms.Count().Should().Be(preTestRoomsCount - 1);
+            Context.Rooms.Count(r => r.Id == existingRoom.Id).Should().Be(0);
+            Context.RoomsUsers.Count(r => r.Id == existingRoom.Id).Should().Be(0);
+        }
+
+        [Theory]
+        [InlineData(RoomUserRole.User)]
+        [InlineData(RoomUserRole.Moderator)]
+        public async Task DeleteRoom_ExistingRoomDeletedByNonOwner_RoomIsNotDeleted(RoomUserRole userRole)
+        {
+            //Arrange
+            var testOwner = SharedTestData.DefaultUser;
+            var testUser = SharedTestData.CreateTestUser(
+                new Guid("6b869193-972c-4f99-8224-d7fa26ab381b"), 
+                "UnexistingUsername",
+                SharedTestData.DefaultTestPassword);
+            await Context.SaveEntity(testUser);
+
+            var existingRoom = new Room
+            {
+                Name = "TestRoomName"
+            };
+            await Context.SaveEntity(existingRoom);
+
+            var roomOwnerPair = new RoomUser
+            {
+                RoomId = existingRoom.Id,
+                UserId = testOwner.Id,
+                Role = RoomUserRole.Owner
+            };
+            await Context.SaveEntity(roomOwnerPair);
+
+            var roomUserPair = new RoomUser
             {
                 RoomId = existingRoom.Id,
                 UserId = testUser.Id,
-                Role = RoomUserRole.Owner
+                Role = userRole
             };
             await Context.SaveEntity(roomUserPair);
 
@@ -168,17 +234,45 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
             };
 
             var preTestRoomsCount = Context.Rooms.Count();
+            var preTestUserRoomPairsCount = Context.RoomsUsers.Count(r => r.Id == existingRoom.Id);
+
+            //Act
+            var response = await _testRoomService.DeleteByIdAsync(request);
+
+            //Assert
+            response.Exists.Should().BeFalse();
+            
+            Context.Rooms.Count().Should().Be(preTestRoomsCount);
+            Context.RoomsUsers.Count(r => r.Id == existingRoom.Id).Should().Be(preTestUserRoomPairsCount);
+        }
+
+        [Theory]
+        [MemberData(nameof(SharedTestData.RoomListsNotEmpty), MemberType = typeof(SharedTestData))]
+        public async Task DeleteRoom_UnexistingRoom_RoomsAreSame(List<Room> existingRooms)
+        {
+            //Arrange
+            await Context.SaveEntityRange(existingRooms);
+            
+            var testUser = SharedTestData.DefaultUser;
+            var unexistingRoomId = new Guid("5eae05d1-970e-4501-91b1-30f6756ed829");
+
+            var request = new RoomDeleteRequestDto
+            {
+                Id = unexistingRoomId,
+                UserId = testUser.Id
+            };
+
+            var preTestRoomsCount = Context.Rooms.Count();
             var preTestUserRoomPairsCount = Context.RoomsUsers.Count();
 
             //Act
             var response = await _testRoomService.DeleteByIdAsync(request);
 
             //Assert
-            Context.Rooms.Count().Should().Be(preTestRoomsCount - 1);
-            Context.Rooms.Count(r => r.Id == existingRoom.Id).Should().Be(0);
-            Context.RoomsUsers.Count(r => r.Id == existingRoom.Id).Should().Be(0);
-        }
+            response.Exists.Should().BeFalse();
 
-        //existing, unexisting, only owner can delete database
+            Context.Rooms.Count().Should().Be(preTestRoomsCount);
+            Context.RoomsUsers.Count().Should().Be(preTestUserRoomPairsCount);
+        }
     }
 }

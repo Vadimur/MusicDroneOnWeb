@@ -25,7 +25,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(ControllersTestsDataGenerator.RegistrationBadRequests), MemberType = typeof(ControllersTestsDataGenerator))]
+        [MemberData(nameof(ControllersTestsData.RegistrationBadRequests), MemberType = typeof(ControllersTestsData))]
         public async Task Register_RequestWithoutRequiredProperties_BadRequest(RegisterRequest request)
         {
             //Arrange
@@ -51,28 +51,6 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
                 Password = "Tribbian1Mancini_@"
             };
 
-            //Act
-            var response = await _client.SendTestRequest(HttpMethod.Post, ApiEndpoints.AccountEndpoints.Register, request);
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            responseContent.Should().NotBeNull();
-            var responseObject = JsonConvert.DeserializeObject<RegisterResponse>(responseContent);
-            responseObject.Role.Should().BeEquivalentTo(Roles.USERS);
-        }
-
-        [Fact]
-        public async Task Register_ValidRequest_RegisteredAndAddedToDatabase()
-        {
-            //Arrange
-            var request = new RegisterRequest
-            {
-                Name = "Tribbiani",
-                Surname = "Mancini",
-                Email = "TribbianiMancini@gmail.com",
-                Password = "Tribbian1Mancini_@"
-            };
             var usersCount = _context.Users.Count();
             var usersRoleId = _context.Roles.Single(r => r.Name == Roles.USERS).Id;
 
@@ -81,10 +59,18 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
             var responseContent = await response.Content.ReadAsStringAsync();
 
             //Assert
-            _context.Users.Count().Should().Be(usersCount + 1);
-            var registeredUsers = _context.Users.Where(u => u.Email == request.Email).ToList();
-            registeredUsers.Count.Should().Be(1);
+            // response is valid
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            responseContent.Should().NotBeNull();
+            var responseObject = JsonConvert.DeserializeObject<RegisterResponse>(responseContent);
+            responseObject.Role.Should().BeEquivalentTo(Roles.USERS);
 
+            // database mock is updated
+            _context.Users.Count().Should().Be(usersCount + 1);
+            var registeredUsers = _context.Users.Where(u => u.FirstName == request.Name &&
+                                                            u.LastName == request.Surname &&
+                                                            u.Email == request.Email).ToList();
+            registeredUsers.Count.Should().Be(1);
             var registeredUser = registeredUsers.Single();
             var userRoles = _context.UserRoles.Where(p => p.UserId.Equals(registeredUser.Id)).ToList();
             userRoles.Count.Should().Be(1);
@@ -157,7 +143,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(ControllersTestsDataGenerator.LoginBadRequests), MemberType = typeof(ControllersTestsDataGenerator))]
+        [MemberData(nameof(ControllersTestsData.LoginBadRequests), MemberType = typeof(ControllersTestsData))]
         public async Task Login_RequestWithoutRequiredProperties_BadRequest(LoginRequest request)
         {
             //Arrange
@@ -249,11 +235,6 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         public async Task Profile_UnauthorizedRequest_UnathorizedResponseStatusCode()
         {
             //Arrange
-            var userId = new Guid("b756adc1-8451-4db1-835c-ee759f3463c8");
-            var username = "UnathorizedProfileTestUser";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
 
             //Act
             var response = await _client.SendTestRequest(HttpMethod.Get, ApiEndpoints.AccountEndpoints.Profile);
@@ -263,7 +244,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(ControllersTestsDataGenerator.UsersWithAuthorizationRoles), MemberType = typeof(ControllersTestsDataGenerator))]
+        [MemberData(nameof(ControllersTestsData.UsersWithAuthorizationRoles), MemberType = typeof(ControllersTestsData))]
         public async Task Profile_AuthorizedRequestUserExists_UsersProfileWasReturned(Guid userId, string username, string role)
         {
             //Arrange
@@ -287,7 +268,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(ControllersTestsDataGenerator.UsersWithAuthorizationRoles), MemberType = typeof(ControllersTestsDataGenerator))]
+        [MemberData(nameof(ControllersTestsData.UsersWithAuthorizationRoles), MemberType = typeof(ControllersTestsData))]
         public async Task Profile_AuthorizedRequestUserDoesntExist_NotFoundResponse(Guid userId, string username, string role)
         {
             //Arrange

@@ -2,12 +2,10 @@
 using MusicDrone.API.Models.Requests;
 using MusicDrone.API.Models.Responses;
 using MusicDrone.Data.Models;
-using MusicDrone.IntegrationTests.ControllerServicesTests.Helpers;
 using MusicDrone.IntegrationTests.ControllerServicesTests.Custom.Authentication;
-using MusicDrone.IntegrationTests.ControllerServicesTests.Data;
+using MusicDrone.IntegrationTests.ControllerServicesTests.Helpers;
 using MusicDrone.IntegrationTests.Shared;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -25,19 +23,14 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Fact]
-        public async Task Create_ValidRequest_RoomCreatedValidResponse()
+        public async Task Create_ValidRequest_CreatedResponse()
         {
             //Arrange
-            var userId = new Guid("e6be0075-db0b-46c8-a715-57c2c8cb4bbc");
-            var username = "TestCreateRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
+            var user = SharedTestData.DefaultUser;
 
-            var roomName = "TestRoom123";
             var request = new RoomCreateRequestModel
             {
-                Name = roomName
+                Name = "TestRoom123"
             };
 
             var client = _factory.CreateClientWithTestAuth(user);
@@ -51,7 +44,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
             response.Headers.Location.LocalPath.Should().MatchEquivalentOf($"{ApiEndpoints.RoomEndpoints.Base}*");
             responseContent.Should().NotBeNull();
             var responseData = JsonConvert.DeserializeObject<RoomCreateRequestModel>(responseContent);
-            responseData.Name.Should().BeEquivalentTo(roomName);
+            responseData.Name.Should().BeEquivalentTo(request.Name);
         }
 
         [Fact]
@@ -73,11 +66,12 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Theory]
-        [MemberData(nameof(SharedTestData.ExistingRooms), MemberType = typeof(SharedTestData))]
+        [MemberData(nameof(SharedTestData.RoomListsNotEmpty), MemberType = typeof(SharedTestData))]
+        [MemberData(nameof(SharedTestData.RoomsListEmpty), MemberType = typeof(SharedTestData))]
         public async Task GetAll_ValidRequest_AllRoomsReturned(List<Room> existingRooms)
         {
             //Arrange
-            Task.WaitAll(existingRooms.Select(r => _context.SaveEntity(r)).ToArray());
+            await _context.SaveEntityRange(existingRooms);
             var roomsCount = _context.Rooms.Count();
 
             var client = _factory.CreateClientWithTestAuth(TestClaimsProvider.WithUserClaims());
@@ -90,24 +84,21 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             responseContent.Should().NotBeNull();
             var responseData = JsonConvert.DeserializeObject<List<RoomResponseModel>>(responseContent);
-            responseData.Count().Should().Be(roomsCount);
+            responseData.Count.Should().Be(roomsCount);
         }
 
         [Fact]
         public async Task GetRoom_ExistingRoomId_RoomInformationInResponse()
         {
             //Arrange
-            var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
-                Name = roomName
+                Name = "TestRoomName"
             };
             await _context.SaveEntity(existingRoom);
 
-            var roomId = _context.Rooms.Single().Id.ToString();
-
             var client = _factory.CreateClientWithTestAuth(TestClaimsProvider.WithUserClaims());
-            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(roomId);
+            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(existingRoom.Id.ToString());
 
             //Act
             var response = await client.SendTestRequest(HttpMethod.Get, apiEndpoint);
@@ -117,8 +108,8 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             responseContent.Should().NotBeNull();
             var responseData = JsonConvert.DeserializeObject<RoomResponseModel>(responseContent);
-            responseData.Id.Should().Be(roomId);
-            responseData.Name.Should().Be(roomName);
+            responseData.Id.Should().Be(existingRoom.Id.ToString());
+            responseData.Name.Should().Be(existingRoom.Name);
         }
 
         [Fact]
@@ -154,34 +145,28 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Fact]
-        public async Task DeleteRoom_ExistingRoom_ResponseIsValid()
+        public async Task DeleteRoom_ExistingRoom_NoContentResponse()
         {
             //Arrange
-            var userId = new Guid("6b2e1fd0-a2f6-4288-a3b8-fda954971dd1");
-            var username = "TestDeleteRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
+            var user = SharedTestData.DefaultUser;
 
-            var roomName = "TestRoomName";
             var existingRoom = new Room()
             {
-                Name = roomName
+                Name = "TestRoomName"
             };
             await _context.SaveEntity(existingRoom);
-            var roomId = _context.Rooms.Single().Id.ToString();
 
             var roomUserPair = new RoomUser() 
             { 
-                RoomId = new Guid(roomId),
-                UserId = userId,
+                RoomId = existingRoom.Id,
+                UserId = user.Id,
                 Role = RoomUserRole.Owner
             };
             await _context.SaveEntity(roomUserPair);
 
             var request = new RoomDeleteRequestModel
             {
-                Id = roomId
+                Id = existingRoom.Id.ToString()
             };
 
             var client = _factory.CreateClientWithTestAuth(user);
@@ -192,69 +177,17 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        }
+        }   
 
         [Fact]
-        public async Task DeleteRoom_ExistingRoom_RoomIsDeletedFromDatabase()
+        public async Task DeleteRoom_InvalidRoomId_NotFoundResponse()
         {
             //Arrange
-            var userId = new Guid("6b2e1fd0-a2f6-4288-a3b8-fda954971dd1");
-            var username = "TestDeleteRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
-
-            var roomName = "TestRoomName";
-            var existingRoom = new Room()
-            {
-                Name = roomName
-            };
-            await _context.SaveEntity(existingRoom);
-            var roomId = _context.Rooms.Single().Id;
-
-            var roomUserPair = new RoomUser()
-            {
-                RoomId = roomId,
-                UserId = userId,
-                Role = RoomUserRole.Owner
-            };
-            await _context.SaveEntity(roomUserPair);
+            var user = SharedTestData.DefaultUser;
 
             var request = new RoomDeleteRequestModel
             {
-                Id = roomId.ToString()
-            };
-
-            var roomsCount = _context.Rooms.Count();
-            var usersCount = _context.Users.Count();
-
-            var client = _factory.CreateClientWithTestAuth(user);
-            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(request.Id);
-
-            //Act
-            await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
-
-            //Assert
-            _context.Rooms.Count().Should().Be(roomsCount - 1);
-            _context.RoomsUsers.Count(r => r.Id == roomId).Should().Be(0);
-            _context.Users.Count().Should().Be(usersCount);
-        }
-
-        [Fact]
-        public async Task DeleteRoom_InvalidRoomId_ResponseIsValid()
-        {
-            //Arrange
-            var userId = new Guid("4e584416-fdd1-4c92-a90e-eb808c8b0166");
-            var username = "TestDeleteRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
-
-            var invalidRoomId = "xx_notvalidid_xx";
-
-            var request = new RoomDeleteRequestModel
-            {
-                Id = invalidRoomId
+                Id = "xx_notvalidid_xx"
             };
 
             var client = _factory.CreateClientWithTestAuth(user);
@@ -268,47 +201,10 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Fact]
-        public async Task DeleteRoom_InvalidRoomId_DatabaseRemainsTheSame()
+        public async Task DeleteRoom_UnexistingRoom_NotFoundResponse()
         {
             //Arrange
-            var userId = new Guid("0eed43e3-48b2-428a-8cef-5dbf68701c4a");
-            var username = "TestDeleteRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
-
-            var invalidRoomId = "xx_notvalidid_xx";
-
-            var roomsCount = _context.Rooms.Count();
-            var usersCount = _context.Users.Count();
-            var roomUsersCount = _context.RoomsUsers.Count();
-
-            var request = new RoomDeleteRequestModel
-            {
-                Id = invalidRoomId
-            };
-
-            var client = _factory.CreateClientWithTestAuth(user);
-            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(request.Id);
-
-            //Act
-            await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
-
-            //Assert
-            _context.Rooms.Count().Should().Be(roomsCount);
-            _context.RoomsUsers.Count().Should().Be(roomUsersCount);
-            _context.Users.Count().Should().Be(usersCount);
-        }
-
-        [Fact]
-        public async Task DeleteRoom_UnexistingRoom_ResponseIsValid()
-        {
-            //Arrange
-            var userId = new Guid("6b2e1fd0-a2f6-4288-a3b8-fda954971dd1");
-            var username = "TestDeleteRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
+            var user = SharedTestData.DefaultUser;
 
             var randomRoomId = "226c67a4-72eb-4bc7-9220-f56aaef0285b";
 
@@ -325,39 +221,6 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }
-
-        [Fact]
-        public async Task DeleteRoom_UnexistingRoom_DatabaseRemainsTheSame()
-        {
-            //Arrange
-            var userId = new Guid("6b2e1fd0-a2f6-4288-a3b8-fda954971dd1");
-            var username = "TestDeleteRoomUsername";
-            var password = SharedTestData.DefaultTestPassword;
-            var user = SharedTestData.CreateTestUser(userId, username, password);
-            await _context.SaveEntity(user);
-
-            var roomsCount = _context.Rooms.Count();
-            var roomUsersCount = _context.RoomsUsers.Count();
-            var usersCount = _context.Users.Count();
-
-            var randomRoomId = "226c67a4-72eb-4bc7-9220-f56aaef0285b";
-
-            var request = new RoomDeleteRequestModel
-            {
-                Id = randomRoomId
-            };
-
-            var client = _factory.CreateClientWithTestAuth(user);
-            var apiEndpoint = ApiEndpoints.RoomEndpoints.WithId(request.Id);
-
-            //Act
-            await client.SendTestRequest(HttpMethod.Delete, apiEndpoint, request);
-
-            //Assert
-            _context.Rooms.Count().Should().Be(roomsCount);
-            _context.RoomsUsers.Count().Should().Be(roomUsersCount);
-            _context.Users.Count().Should().Be(usersCount);
         }
     }
 }

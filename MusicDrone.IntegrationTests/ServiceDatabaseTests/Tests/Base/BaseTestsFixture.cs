@@ -16,7 +16,8 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests.Base
 
         public BaseTestsFixture()
         {
-            Connection = new SqlConnection(@"Data Source=localhost;Integrated Security=true;Initial Catalog=TestMusicDroneIdentityDb");
+            var connectionString = OptionsStorage.TestDatabaseConnectionString;
+            Connection = new SqlConnection(connectionString);
 
             Seed();
 

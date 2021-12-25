@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -26,6 +26,12 @@
     <ProjectReference Include="..\MusicDrone.API\MusicDrone.API.csproj" />
     <ProjectReference Include="..\MusicDrone.Business\MusicDrone.Business.csproj" />
     <ProjectReference Include="..\MusicDrone.Data\MusicDrone.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\launchSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
