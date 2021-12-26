@@ -20,8 +20,9 @@ namespace MusicDrone.Business.Services
         public async Task<RoomsUsersCreateResponseDto> CreateAsync(RoomsUsersCreateRequestDto request)
         {
             var response = new RoomsUsersCreateResponseDto { Exists = false };
+            var userExists = await _context.Users.FirstOrDefaultAsync(r => r.Id == request.UserId);
             var roomExists = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == request.RoomId);
-            if (roomExists == null)
+            if (roomExists == null || userExists == null)
             {
                 return null;
             }
