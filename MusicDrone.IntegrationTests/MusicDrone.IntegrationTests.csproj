@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Properties\launchSettings.json">
+    <None Update="Configuration\testsSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
