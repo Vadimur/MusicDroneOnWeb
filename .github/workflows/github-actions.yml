@@ -7,6 +7,7 @@ jobs:
     env:
       TESTING_ENVIRONMENT: CI
       DbServer: db
+      DbPort: 1433
       DbUser: sa
       DbPassword: "!suPerSecret5Assword!"
       IdentityDatabase: "TestMusicDroneIdentityDb"
@@ -14,7 +15,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2.1.0
       - name: Start dependencies (docker-compose)
-        run: docker-compose -f docker-compose-testing.yml up -d  
+        run: |
+                    docker-compose -f docker-compose-testing.yml up -d  
       - name: Wait for SQL Server container
         uses: jakejarvis/wait-action@master
         with:
@@ -25,9 +27,9 @@ jobs:
           dotnet-version: '5.0.x'   
       - name: Install dependencies
         run: dotnet restore
-      - name: Build
-        run: dotnet build -c Release --no-restore
       - name: Add xunit.runner.console
         run: dotnet add ./MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
+      - name: Build
+        run: dotnet build -c Release --no-restore
       - name: Test
         run: dotnet test -c Release --no-build -v n

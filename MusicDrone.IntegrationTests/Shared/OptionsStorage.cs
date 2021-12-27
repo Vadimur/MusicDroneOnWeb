@@ -41,11 +41,12 @@ namespace MusicDrone.IntegrationTests.Shared
             }
 
             var server = config["DbServer"];
+            var port = config["DbPort"];
             var user = config["DbUser"];
             var password = config["DbPassword"];
             var dbName = config["IdentityDatabase"];
 
-            var connectionString = $"Server={server};Database={dbName};User={user};Password={password};";
+            var connectionString = $"Data Source={server},{port};Database={dbName};User={user};Password={password};";
             _logger.LogInformation($"connectionString: {connectionString}");
 
             return connectionString;
