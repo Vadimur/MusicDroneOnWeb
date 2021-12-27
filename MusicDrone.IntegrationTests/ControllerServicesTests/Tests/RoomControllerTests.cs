@@ -22,7 +22,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
 
         }
 
-        [Fact]
+        /*[Fact]
         public async Task Create_ValidRequest_CreatedResponse()
         {
             //Arrange
@@ -45,7 +45,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
             responseContent.Should().NotBeNull();
             var responseData = JsonConvert.DeserializeObject<RoomCreateRequestModel>(responseContent);
             responseData.Name.Should().BeEquivalentTo(request.Name);
-        }
+        }*/
 
         [Fact]
         public async Task Create_InvalidRequest_BadRequestResponse()
