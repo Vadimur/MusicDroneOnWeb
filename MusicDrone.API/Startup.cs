@@ -1,25 +1,24 @@
-using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MusicDrone.Business.Services;
+using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Data;
+using MusicDrone.Data.Constants;
 using MusicDrone.Data.Models;
 using MusicDrone.Data.Services;
 using MusicDrone.Data.Services.Abstraction;
-using MusicDrone.Business.Services;
-using MusicDrone.Business.Services.Abstraction;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using MusicDrone.Data.Constants;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace MusicDrone.API
 {
@@ -45,15 +44,6 @@ namespace MusicDrone.API
 #else
             var identityConnectionString = Configuration.GetConnectionString("MusicDroneIdentityDb");
 #endif
-
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            ILogger logger = loggerFactory.CreateLogger<Startup>();
-            logger.LogInformation(identityConnectionString);
-
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<MusicDroneDbContext>()
                 .AddDefaultTokenProviders();
