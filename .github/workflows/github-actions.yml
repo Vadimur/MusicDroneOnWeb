@@ -14,13 +14,7 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '5s'
-
-  test:
-    name: Testing
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      TESTING_ENVIRONMENT: CI
-    steps:
-      - name: Run tests
-        run: dotnet test --no-build -v n
+      - name: Test
+        run: |
+          TESTING_ENVIRONMENT="CI"
+          dotnet test --no-build -v n
