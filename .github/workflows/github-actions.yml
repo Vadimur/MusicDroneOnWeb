@@ -1,0 +1,28 @@
+on: [push]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2.1.0
+      - name: Start dependencies (docker-compose)
+        run: |
+                    docker-compose up -d  
+      - name: Wait for SQL Server container
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '5s'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '5.0.x'
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build -c Release --no-restore
+      - name: Test
+        run: |
+          $env:TESTING_ENVIRONMENT="CI"
+          dotnet test --no-build -v n
