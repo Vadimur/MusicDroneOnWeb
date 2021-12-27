@@ -10,7 +10,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2.1.0
       - name: Start dependencies (docker-compose)
-        run: docker-compose -f .\docker-compose-testing.yml up -d  
+        run: docker-compose -f docker-compose-testing.yml up -d  
       - name: Wait for SQL Server container
         uses: jakejarvis/wait-action@master
         with:
