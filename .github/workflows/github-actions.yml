@@ -34,6 +34,6 @@ jobs:
       IdentityDatabase: "TestMusicDroneIdentityDb"
     steps:
       - name: Add xunit.runner.console
-        run: dotnet add ./MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
+        run: dotnet add MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
       - name: Test
         run: dotnet test -c Release --no-build -v n
