@@ -7,7 +7,7 @@ jobs:
     env:
       TESTING_ENVIRONMENT: CI
       DbServer: db
-      DbPort: 1433
+      DbPort: 1401
       DbUser: sa
       DbPassword: "!suPerSecret5Assword!"
       IdentityDatabase: "TestMusicDroneIdentityDb"

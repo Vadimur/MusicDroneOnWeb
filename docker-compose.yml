@@ -12,8 +12,9 @@ services:
         environment:
             DbServer: db
             DbUser: sa
+            DbPort: 1401
             DbPassword: "!suPerSecret5Assword!"
-            IdentityDatabase: MusicDroneIdentityDb
+            IdentityDatabase: TestMusicDroneIdentityDb
         build: .
         ports:
             - "8080:5000"
