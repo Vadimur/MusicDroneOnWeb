@@ -4,8 +4,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      TESTING_ENVIRONMENT: CI
     steps:
       - name: Check out code
         uses: actions/checkout@v2.1.0
@@ -21,9 +19,21 @@ jobs:
           dotnet-version: '5.0.x'   
       - name: Install dependencies
         run: dotnet restore
-      - name: Add xunit.runner.console
-        run: dotnet add ./MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
       - name: Build
         run: dotnet build -c Release --no-restore
+
+  test:
+    name: Testing
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TESTING_ENVIRONMENT: CI
+      DbServer: db
+      DbUser: sa
+      DbPassword: "!suPerSecret5Assword!"
+      IdentityDatabase: "TestMusicDroneIdentityDb"
+    steps:
+      - name: Add xunit.runner.console
+        run: dotnet add ./MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
       - name: Test
-        run: dotnet test -c Release -v n
+        run: dotnet test -c Release --no-build -v n
