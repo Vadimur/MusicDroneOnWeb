@@ -10,13 +10,20 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2.1.0
       - name: Start dependencies (docker-compose)
-        run: |
-                    docker-compose up -d  
+        run: docker-compose -f .\docker-compose-testing.yml up -d  
       - name: Wait for SQL Server container
         uses: jakejarvis/wait-action@master
         with:
           time: '5s'
+      - name: Install .NET
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '5.0.x'   
+      - name: Install dependencies
+        run: dotnet restore
       - name: Add xunit.runner.console
         run: dotnet add ./MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
+      - name: Build
+        run: dotnet build -c Release --no-restore
       - name: Test
-        run: dotnet test -v n
+        run: dotnet test -c Release -v n
