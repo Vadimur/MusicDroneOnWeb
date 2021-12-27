@@ -33,7 +33,9 @@ jobs:
       DbPassword: "!suPerSecret5Assword!"
       IdentityDatabase: "TestMusicDroneIdentityDb"
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2.1.0
       - name: Add xunit.runner.console
-        run: dotnet add MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
+        run: dotnet add ./MusicDrone.IntegrationTests/MusicDrone.IntegrationTests.csproj package xunit.runner.console --version 2.4.1
       - name: Test
-        run: dotnet test -c Release --no-build -v n
+        run: dotnet test -c Release -v n
