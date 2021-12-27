@@ -12,7 +12,6 @@ services:
         environment:
             DbServer: db
             DbUser: sa
-            DbPort: 1401
             DbPassword: "!suPerSecret5Assword!"
             IdentityDatabase: TestMusicDroneIdentityDb
         build: .
