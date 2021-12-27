@@ -27,6 +27,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         {
             //Arrange
             var user = SharedTestData.DefaultUser;
+            await _context.SaveEntity(user);
 
             var request = new RoomCreateRequestModel
             {

@@ -53,7 +53,7 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
             newRoomUserPairs.Single().Role.Should().Be(RoomUserRole.Owner);
         }
 
-        /*[Fact] // should be fixed
+        [Fact]
         public async Task Create_UserDoesNotExist_NoChangesInDatabase()
         {
             //Arrange
@@ -83,7 +83,7 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
 
             // room-user pair shouldn't be creater
             Context.RoomsUsers.Count().Should().Be(preTestUserRoomPairsCount);
-        }*/
+        }
 
         [Theory]
         [MemberData(nameof(SharedTestData.RoomListsNotEmpty), MemberType = typeof(SharedTestData))]

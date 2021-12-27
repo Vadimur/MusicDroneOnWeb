@@ -23,11 +23,12 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
 
         }
 
-        [Fact] //TODO should be fixed. unexistig user cannot enter room
+        [Fact]
         public async Task EnterRoom_ValidRequest_RoomEnteredOkResponse()
         {
             //Arrange
             var user = SharedTestData.DefaultUser;
+            await _context.SaveEntity(user);
 
             var existingRoom = new Room
             {
@@ -54,6 +55,7 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         {
             //Arrange
             var user = SharedTestData.DefaultUser;
+            await _context.SaveEntity(user);
 
             var existingRoom = new Room
             {

@@ -122,7 +122,7 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
             Context.RoomsUsers.Count().Should().Be(preTestRoomUsers);
         }
 
-        /*[Fact] // should be fixed
+        [Fact]
         public async Task EnterRoom_UnexistingUser_NullResponse()
         {
             //Arrange
@@ -151,7 +151,7 @@ namespace MusicDrone.IntegrationTests.ServiceDatabaseTests.Tests
 
             Context.Rooms.Count().Should().Be(preTestRoomsCount);
             Context.RoomsUsers.Count().Should().Be(preTestRoomUsers);
-        }*/
+        }
 
         [Theory]
         [MemberData(nameof(SharedTestData.UserListsNotEmpty), MemberType = typeof(SharedTestData))]
