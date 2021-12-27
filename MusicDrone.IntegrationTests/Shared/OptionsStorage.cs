@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace MusicDrone.IntegrationTests.Shared
@@ -6,20 +7,34 @@ namespace MusicDrone.IntegrationTests.Shared
     public static class OptionsStorage
     {
         public static string TestDatabaseConnectionString { get; }
+        private static ILogger _logger;
 
         static OptionsStorage()
         {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            _logger = loggerFactory.CreateLogger<object>();
+
             var config = new ConfigurationBuilder()
                 .AddJsonFile("Configuration/testsSettings.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
-            TestDatabaseConnectionString = ReadConnectionStringFromEnvironemntVariables(config) ?? ReadConnectionStringFromFile(config);      
+
+            TestDatabaseConnectionString = ReadConnectionStringFromEnvironemntVariables(config) ?? ReadConnectionStringFromFile(config);
+
+            _logger.LogInformation($"TestDatabaseConnectionString: {TestDatabaseConnectionString}");
+
         }
 
         private static string ReadConnectionStringFromEnvironemntVariables(IConfigurationRoot config)
         {
+
             var env = Environment.GetEnvironmentVariable("TESTING_ENVIRONMENT");
 
+            _logger.LogInformation($"TESTING ENVIRONMENT: {env}");
             if (string.IsNullOrEmpty(env) || env.Equals("CI") == false)
             {
                 return null;
@@ -31,6 +46,7 @@ namespace MusicDrone.IntegrationTests.Shared
             var dbName = config["IdentityDatabase"];
 
             var connectionString = $"Server={server};Database={dbName};User={user};Password={password};";
+            _logger.LogInformation($"connectionString: {connectionString}");
 
             return connectionString;
         }
