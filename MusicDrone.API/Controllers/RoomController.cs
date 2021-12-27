@@ -37,6 +37,11 @@ namespace MusicDrone.API.Controllers
             }
             var serviceRequest = new RoomCreateRequestDto { Name = request.Name, UserId = userGuid };
             var serviceResponse = await _roomService.CreateAsync(serviceRequest);
+            if (serviceResponse == null)
+            {
+                return NotFound();
+            }
+
             return CreatedAtAction("GetConcreteRoom", new { id = serviceResponse.Id }, request);
         }
         [HttpGet("all")]

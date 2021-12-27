@@ -49,6 +49,28 @@ namespace MusicDrone.IntegrationTests.ControllerServicesTests.Tests
         }
 
         [Fact]
+        public async Task Create_UnexistingUser_NotFoundResponse()
+        {
+            //Arrange
+            var user = SharedTestData.DefaultUser;
+            var preTestRoomsCount = _context.Rooms.Count();
+
+            var request = new RoomCreateRequestModel
+            {
+                Name = "TestRoom123"
+            };
+
+            var client = _factory.CreateClientWithTestAuth(user);
+
+            //Act
+            var response = await client.SendTestRequest(HttpMethod.Post, ApiEndpoints.RoomEndpoints.Create, request);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            _context.Rooms.Count().Should().Be(preTestRoomsCount);
+        }
+
+        [Fact]
         public async Task Create_InvalidRequest_BadRequestResponse()
         {
             //Arrange
