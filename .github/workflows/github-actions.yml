@@ -2,7 +2,7 @@ on: [push]
 
 jobs:
   build:
-    name: Build & Test
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -14,15 +14,13 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '5s'
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: '5.0.x'
-      - name: Install dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build -c Release --no-restore
-      - name: Test
-        run: |
-          $env:TESTING_ENVIRONMENT="CI"
-          dotnet test --no-build -v n
+
+  test:
+    name: Testing
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TESTING_ENVIRONMENT: CI
+    steps:
+      - name: Run tests
+        run: dotnet test --no-build -v n
