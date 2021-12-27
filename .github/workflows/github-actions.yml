@@ -16,5 +16,7 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '5s'
+      - name: Add xunit.runner.console
+        run: dotnet add package xunit.runner.console --version 2.4.1
       - name: Test
         run: dotnet test --no-build -v n
