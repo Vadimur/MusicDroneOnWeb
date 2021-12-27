@@ -4,6 +4,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      TESTING_ENVIRONMENT: CI
     steps:
       - name: Check out code
         uses: actions/checkout@v2.1.0
@@ -15,6 +17,4 @@ jobs:
         with:
           time: '5s'
       - name: Test
-        run: |
-          TESTING_ENVIRONMENT="CI"
-          dotnet test --no-build -v n
+        run: dotnet test --no-build -v n
