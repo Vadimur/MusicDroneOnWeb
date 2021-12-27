@@ -46,7 +46,7 @@ namespace MusicDrone.IntegrationTests.Shared
             var password = config["DbPassword"];
             var dbName = config["IdentityDatabase"];
 
-            var connectionString = $"Data Source={server},{port};Database={dbName};User={user};Password={password};";
+            var connectionString = $"Data Source={server},{port}; Initial Catalog={dbName}; User Id={user}; Password={password};";
             _logger.LogInformation($"connectionString: {connectionString}");
 
             return connectionString;
