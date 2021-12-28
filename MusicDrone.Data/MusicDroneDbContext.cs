@@ -9,8 +9,11 @@ namespace MusicDrone.Data
 {
     public class MusicDroneDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        public DbSet<Room> Rooms { get; set; }
-        public DbSet<RoomUser> RoomsUsers { get; set; }
+        protected DbSet<Room> Rooms { get; set; }
+        protected DbSet<RoomUser> RoomsUsers { get; set; }
+        protected DbSet<Music> Music { get; set; }
+        protected DbSet<MusicRating> MusicRatings { get; set; }
+        protected DbSet<FileDesc> Files { get; set; }
 
         public MusicDroneDbContext(DbContextOptions<MusicDroneDbContext> options)
             : base(options)
@@ -22,17 +25,54 @@ namespace MusicDrone.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<RoomUser>().HasKey(e => new { e.RoomId, e.UserId });
-            modelBuilder.Entity<RoomUser>().HasOne(e => e.Room).WithMany(e => e.RoomsUsers).HasForeignKey(e => e.RoomId).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<RoomUser>().HasOne(e => e.User).WithMany(e => e.RoomsUsers).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<RoomUser>()
+                .HasKey(e => new { e.RoomId, e.UserId });
+            
+            modelBuilder.Entity<RoomUser>()
+                .HasOne(e => e.Room)
+                .WithMany(e => e.RoomsUsers)
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<RoomUser>().HasOne(e => e.User)
+                .WithMany(e => e.RoomsUsers)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             var adminRoleId = new Guid("bc963479-34f3-42b7-8d32-41bae9c47742");
             var adminId = new Guid("cdd4f090-d8aa-4c14-9cd5-fe3464ff3bbb");
 
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = new Guid("85b19000-bc92-435a-8d6b-ea780217d030"), Name = Constants.Roles.USERS, NormalizedName = Constants.Roles.USERS.ToUpper() });
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = new Guid("e3e7bd47-14c6-4a22-81c7-9381d1b4db70"), Name = Constants.Roles.PREMIUMUSERS, NormalizedName = Constants.Roles.PREMIUMUSERS.ToUpper() });
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = new Guid("7d0900cc-5def-4708-b88c-9dd66c7db1ef"), Name = Constants.Roles.MODERATORS, NormalizedName = Constants.Roles.MODERATORS.ToUpper() });
-            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole { Id = adminRoleId, Name = Constants.Roles.ADMINISTRATORS, NormalizedName = Constants.Roles.ADMINISTRATORS.ToUpper() });
+            modelBuilder.Entity<ApplicationRole>()
+                .HasData(new ApplicationRole
+                {
+                    Id = new Guid("85b19000-bc92-435a-8d6b-ea780217d030"), 
+                    Name = Constants.Roles.USERS, 
+                    NormalizedName = Constants.Roles.USERS.ToUpper()
+                });
+            
+            modelBuilder.Entity<ApplicationRole>()
+                .HasData(new ApplicationRole
+                {
+                    Id = new Guid("e3e7bd47-14c6-4a22-81c7-9381d1b4db70"), 
+                    Name = Constants.Roles.PREMIUMUSERS, 
+                    NormalizedName = Constants.Roles.PREMIUMUSERS.ToUpper()
+                });
+            
+            modelBuilder.Entity<ApplicationRole>()
+                .HasData(new ApplicationRole
+                {
+                    Id = new Guid("7d0900cc-5def-4708-b88c-9dd66c7db1ef"), 
+                    Name = Constants.Roles.MODERATORS, 
+                    NormalizedName = Constants.Roles.MODERATORS.ToUpper()
+                });
+            
+            modelBuilder.Entity<ApplicationRole>()
+                .HasData(new ApplicationRole
+                {
+                    Id = adminRoleId, 
+                    Name = Constants.Roles.ADMINISTRATORS, 
+                    NormalizedName = Constants.Roles.ADMINISTRATORS.ToUpper()
+                });
 
 
             //a hasher to hash the password before seeding the user to the db

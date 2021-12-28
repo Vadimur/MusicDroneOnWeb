@@ -1,4 +1,4 @@
-﻿namespace MusicDrone.Business.Models.Responses
+﻿namespace MusicDrone.Data.DTO
 {
     public class RoomsUsersGetByRoomIdResponseDto
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using MusicDrone.Business.Services.Abstraction;
 using MusicDrone.Business.Models.Requests;
 using MusicDrone.Business.Models.Responses;
 using AutoMapper;
+using MusicDrone.Data.DTO;
 
 namespace MusicDrone.API.Controllers
 {
@@ -57,10 +59,10 @@ namespace MusicDrone.API.Controllers
             }
             var serviceRequest = new RoomsUsersGetByRoomIdRequestDto { RoomId = roomGuid };
             var serviceResponse = await _roomsUsersService.GetAllInRoom(serviceRequest);
-            if (serviceResponse == null)
-            {
+            
+            if (serviceResponse.Count == 0)
                 return NotFound();
-            }
+
             var users = _mapper.Map<IEnumerable<RoomsUsersGetByRoomIdResponseDto>, IEnumerable<RoomsUsersGetByRoomIdResponseModel>>(serviceResponse);
             return Ok(users);
         }

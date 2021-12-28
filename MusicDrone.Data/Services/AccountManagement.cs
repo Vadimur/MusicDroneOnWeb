@@ -84,7 +84,7 @@ namespace MusicDrone.Data.Services
             var key = Encoding.ASCII.GetBytes(AuthorizationConstants.JWT_SECRET_KEY);
             var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
-            var claims = new List<Claim> {new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, userName) };
 
             foreach (var role in roles)

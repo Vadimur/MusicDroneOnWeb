@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using MusicDrone.Data.Constants;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using MusicDrone.API.Configuration;
 
 namespace MusicDrone.API
 {
@@ -34,32 +35,17 @@ namespace MusicDrone.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-#if !DEBUG
-            var server = Configuration["DbServer"];
-            var port = Configuration["DbPort"];
-            var user = Configuration["DbUser"];
-            var password = Configuration["DbPassword"];
-            var identityDatabaseName = Configuration["IdentityDatabase"];
-                    
-            var identityConnectionString = $"Server={server};Database={identityDatabaseName};User={user};Password={password};";
-#else
-            var identityConnectionString = Configuration.GetConnectionString("MusicDroneIdentityDb");
-#endif
-
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
             });
-
+            
+            var connectionString = Configuration.GetConnectionString("MusicDroneIdentityDb");
             ILogger logger = loggerFactory.CreateLogger<Startup>();
-            logger.LogInformation(identityConnectionString);
-
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<MusicDroneDbContext>()
-                .AddDefaultTokenProviders();
-
-            services.AddDbContext<MusicDroneDbContext>(options =>
-                options.UseSqlServer(identityConnectionString));
+            logger.LogInformation(connectionString);
+            
+            services.AddDataServices(connectionString);
+            services.AddBusinessServices(connectionString);
 
             var key = Encoding.ASCII.GetBytes(AuthorizationConstants.JWT_SECRET_KEY);
             services.AddAuthentication(config =>
@@ -129,10 +115,6 @@ namespace MusicDrone.API
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-            services.AddScoped<IAccountManagement, AccountManagement>();
-            services.AddScoped<IRoomService, RoomService>();
-            services.AddScoped<IRoomsUsersService, RoomsUsersService>();
-            
             services.AddCors();
         }
 
